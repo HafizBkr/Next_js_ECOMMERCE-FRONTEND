@@ -1,0 +1,158 @@
+/* Style général de la navbar */
+.navbar {
+    background-color: #f8f8f7;
+    padding: 16px 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  
+  .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+  }
+  
+  .navLinks {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navItem {
+    margin-left: 20px;
+    font-size: 16px;
+    color: #333;
+    text-decoration: none;
+    position: relative;
+  }
+  
+  .navItemLink {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .navItem:hover {
+    color: #0071e3;
+  }
+  
+  .navItem:after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #0071e3;
+    opacity: 0;
+    transform: scaleX(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  
+  .navItem:hover:after {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  
+  /* Style du dropdown */
+  .dropdown {
+    height: 48vh;
+    position: fixed;
+    top: 50px;
+    left: 0;
+    width: 100vw;
+    background-color: #f8f8f7;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    display: none;
+    justify-content: center;
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+  }
+  
+  /* Affichage du dropdown */
+  .navItem:hover .dropdown {
+    display: block;
+    transform: translateY(0);
+    opacity: 1;
+  }
+  
+  /* Styles pour chaque groupe d'éléments dans le dropdown */
+  .dropdownGroup {
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeIn 0.4s forwards;
+  }
+  
+  /* Animation pour l'apparition des éléments du dropdown */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Animation des éléments de la liste */
+  @keyframes fadeInItems {
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Contenu sous le dropdown */
+  .content-under-dropdown {
+    transition: backdrop-filter 0.4s ease;
+  }
+  
+  /* Appliquer le flou lorsque le dropdown est affiché */
+  .navItem:hover .dropdown + .content-under-dropdown {
+    backdrop-filter: blur(1000px);  /* Applique un flou sur le contenu sous le dropdown */
+    z-index: 5;  /* Place un z-index inférieur pour que le flou soit sous le dropdown */
+  }
+  
+  /* Liens dans le dropdown */
+  .dropdownGroup a {
+    text-decoration: none;
+    color: #0071e3;
+    font-size: 16px;
+    display: block;
+    padding: 8px 0;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  .dropdownGroup a:hover {
+    color: #0056b3;
+  }
+  
+  /* Responsive Design - Pour les petits écrans */
+  @media only screen and (max-width: 834px) {
+    .dropdown {
+      padding-inline-start: 16px;
+      padding-inline-end: 16px;
+    }
+  }
+  
