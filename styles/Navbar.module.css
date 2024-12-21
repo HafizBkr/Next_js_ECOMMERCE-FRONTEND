@@ -1,158 +1,284 @@
-/* Style général de la navbar */
+/* Base Navbar Styles */
 .navbar {
-    background-color: #f8f8f7;
-    padding: 16px 0;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  
-  .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 90%;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    text-decoration: none;
-  }
-  
-  .navLinks {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .navItem {
-    margin-left: 20px;
-    font-size: 16px;
-    color: #333;
-    text-decoration: none;
-    position: relative;
-  }
-  
-  .navItemLink {
-    text-decoration: none;
-    color: inherit;
-  }
-  
-  .navItem:hover {
-    color: #0071e3;
-  }
-  
-  .navItem:after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background-color: #0071e3;
+  background-color: rgba(251, 251, 253, 0.8);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  min-width: 320px;
+  height: 55px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.16);
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 22px;
+  height: 44px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Logo Styles */
+.logo {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+  color: #000000;
+}
+
+.appleLogo {
+  width: 14px;
+  height: 44px;
+  color: #000000;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.appleLogo:hover {
+  opacity: 1;
+}
+
+/* Navigation Links */
+.navLinks {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  z-index: 2;
+  justify-content: center;
+  flex: 1;
+  gap: 28px;
+}
+
+.navItem {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.navLink {
+  color: rgba(0, 0, 0, 0.8);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 44px;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.navLink:hover {
+  color: rgba(0, 0, 0, 1);
+}
+
+/* Dropdown Menu Styles */
+.dropdown {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 44px;
+  background: rgba(251, 251, 253, 0.95);
+  backdrop-filter: saturate(180%) blur(200px);
+  -webkit-backdrop-filter: saturate(180%) blur(200px);
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.16);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+}
+
+.navItem:hover .dropdown,
+.dropdown.active {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dropdownGroup {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 22px;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.dropdownGroup h2 {
+  font-size: 24px;
+  line-height: 1.1666666667;
+  font-weight: 600;
+  letter-spacing: .009em;
+  margin-bottom: 20px;
+  color: #1d1d1f;
+}
+
+.dropdownGroup ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  columns: 2;
+  column-gap: 30px;
+}
+
+.dropdownGroup li {
+  margin-bottom: 12px;
+  break-inside: avoid;
+}
+
+.dropdownLink {
+  color: #06c;
+  font-size: 14px;
+  line-height: 1.4285914286;
+  letter-spacing: -0.016em;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.dropdownLink:hover {
+  color: #0077ed;
+  text-decoration: underline;
+}
+
+/* Icon Container Styles */
+.iconContainer {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 44px;
+  z-index: 2;
+}
+
+.iconButton {
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  transition: color 0.3s ease;
+}
+
+.iconButton:hover,
+.iconButton.active {
+  color: rgba(0, 0, 0, 1);
+}
+
+.icon {
+  width: 15px;
+  height: 15px;
+}
+
+/* Search Styles */
+.searchWrapper {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 22px;
+}
+
+.searchBox {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.searchInput {
+  width: 100%;
+  height: 44px;
+  padding: 0 40px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.04);
+  font-size: 17px;
+  line-height: 1.23536;
+  font-weight: 400;
+  letter-spacing: -.022em;
+  caret-color: #06c;
+  transition: background 0.3s ease;
+}
+
+.searchInput:focus {
+  background: rgba(0, 0, 0, 0.08);
+  outline: none;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(0, 0, 0, 0.4);
+  width: 16px;
+  height: 16px;
+}
+
+.quickLinksSection {
+  margin-top: 30px;
+}
+
+.quickLinksSection h3 {
+  font-size: 12px;
+  line-height: 1.33337;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: #6e6e73;
+  margin-bottom: 14px;
+}
+
+/* Cart Dropdown Styles */
+.cartLinks {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  margin-top: 20px;
+  padding-top: 20px;
+}
+
+.cartLinks ul {
+  columns: 1;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
     opacity: 0;
-    transform: scaleX(0);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateY(-8px);
   }
-  
-  .navItem:hover:after {
+  to {
     opacity: 1;
-    transform: scaleX(1);
-  }
-  
-  /* Style du dropdown */
-  .dropdown {
-    height: 48vh;
-    position: fixed;
-    top: 50px;
-    left: 0;
-    width: 100vw;
-    background-color: #f8f8f7;
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
-    z-index: 10;
-    display: none;
-    justify-content: center;
-    transform: translateY(-100%);
-    opacity: 0;
-    transition: transform 0.4s ease, opacity 0.4s ease;
-  }
-  
-  /* Affichage du dropdown */
-  .navItem:hover .dropdown {
-    display: block;
     transform: translateY(0);
-    opacity: 1;
   }
-  
-  /* Styles pour chaque groupe d'éléments dans le dropdown */
+}
+
+/* Media Queries */
+@media only screen and (max-width: 1068px) {
+  .container,
+  .searchWrapper,
   .dropdownGroup {
-    margin-bottom: 24px;
-    display: flex;
-    justify-content: center;
-    opacity: 0;
-    animation: fadeIn 0.4s forwards;
+    max-width: 692px;
+  }
+}
+
+@media only screen and (max-width: 734px) {
+  .container,
+  .searchWrapper,
+  .dropdownGroup {
+    max-width: none;
+    padding: 0 16px;
+  }
+
+  .navLinks {
+    gap: 16px;
   }
   
-  /* Animation pour l'apparition des éléments du dropdown */
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  /* Animation des éléments de la liste */
-  @keyframes fadeInItems {
-    0% {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  /* Contenu sous le dropdown */
-  .content-under-dropdown {
-    transition: backdrop-filter 0.4s ease;
-  }
-  
-  /* Appliquer le flou lorsque le dropdown est affiché */
-  .navItem:hover .dropdown + .content-under-dropdown {
-    backdrop-filter: blur(1000px);  /* Applique un flou sur le contenu sous le dropdown */
-    z-index: 5;  /* Place un z-index inférieur pour que le flou soit sous le dropdown */
-  }
-  
-  /* Liens dans le dropdown */
-  .dropdownGroup a {
-    text-decoration: none;
-    color: #0071e3;
+  .searchInput {
     font-size: 16px;
-    display: block;
-    padding: 8px 0;
-    transition: color 0.2s ease-in-out;
   }
-  
-  .dropdownGroup a:hover {
-    color: #0056b3;
-  }
-  
-  /* Responsive Design - Pour les petits écrans */
-  @media only screen and (max-width: 834px) {
-    .dropdown {
-      padding-inline-start: 16px;
-      padding-inline-end: 16px;
-    }
-  }
-  
+}
