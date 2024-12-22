@@ -257,28 +257,213 @@
   }
 }
 
-/* Media Queries */
+/* Styles existants conservés... */
+
+/* Styles pour le bouton du menu mobile */
+.mobileMenuButton {
+  display: none;
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.8);
+  transition: color 0.3s ease;
+  z-index: 1000;
+}
+
+.mobileMenuButton:hover,
+.mobileMenuButton.active {
+  color: rgba(0, 0, 0, 1);
+}
+
+/* Styles responsifs améliorés */
 @media only screen and (max-width: 1068px) {
   .container,
   .searchWrapper,
   .dropdownGroup {
     max-width: 692px;
   }
+
+  .navLinks {
+    gap: 20px;
+  }
+
+  .dropdownGroup ul {
+    columns: 2;
+    column-gap: 20px;
+  }
 }
 
-@media only screen and (max-width: 734px) {
-  .container,
-  .searchWrapper,
-  .dropdownGroup {
-    max-width: none;
+@media only screen and (max-width: 834px) {
+  .container {
     padding: 0 16px;
   }
 
+  .mobileMenuButton {
+    display: block;
+    width: 20px;
+    height: 20px;
+  }
+
+  .logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
   .navLinks {
+    position: fixed;
+    top: 55px;
+    left: -100%;
+    width: 100%;
+    height: calc(100vh - 55px);
+    flex-direction: column;
+    background: rgba(251, 251, 253, 0.98);
+    padding: 20px;
+    gap: 0;
+    overflow-y: auto;
+    transition: left 0.3s ease;
+  }
+
+  .navLinks.mobileMenuOpen {
+    left: 0;
+  }
+
+  .navItem {
+    width: 100%;
+    height: auto;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .navLink {
+    width: 100%;
+    padding: 15px 0;
+    font-size: 16px;
+  }
+
+  .dropdown {
+    position: relative;
+    top: 0;
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    padding: 0 0 15px 15px;
+  }
+
+  .dropdownGroup {
+    padding: 0;
+    animation: none;
+  }
+
+  .dropdownGroup h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+
+  .dropdownGroup ul {
+    columns: 1;
+  }
+
+  .searchDropdown,
+  .cartDropdown {
+    position: fixed;
+    top: 55px;
+    left: 0;
+    right: 0;
+    background: rgba(251, 251, 253, 0.98);
+    padding: 20px;
+    height: auto;
+    max-height: calc(100vh - 55px);
+    overflow-y: auto;
+  }
+
+  .searchWrapper {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .searchBox {
+    margin-bottom: 15px;
+  }
+
+  .iconContainer {
     gap: 16px;
   }
-  
+
+  .quickLinksSection ul {
+    columns: 1;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .container {
+    padding: 0 12px;
+  }
+
+  .navLinks {
+    padding: 15px;
+  }
+
+  .logo {
+    font-size: 18px;
+  }
+
+  .navLink {
+    font-size: 15px;
+    padding: 12px 0;
+  }
+
+  .dropdownGroup h2 {
+    font-size: 18px;
+  }
+
+  .dropdownLink {
+    font-size: 13px;
+  }
+
   .searchInput {
-    font-size: 16px;
+    font-size: 14px;
+    height: 40px;
+  }
+
+  .searchWrapper,
+  .cartDropdown {
+    padding: 15px;
+  }
+
+  .iconContainer {
+    gap: 12px;
+  }
+
+  .icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Styles pour éviter le défilement quand le menu mobile est ouvert */
+.bodyNoScroll {
+  overflow: hidden;
+}
+
+/* Animation pour le menu mobile */
+@keyframes slideIn {
+  from {
+    left: -100%;
+  }
+  to {
+    left: 0;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    left: 0;
+  }
+  to {
+    left: -100%;
   }
 }
