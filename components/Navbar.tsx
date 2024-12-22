@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingBag } from 'lucide-react';
+import { Search, ShoppingBag, Menu, X } from 'lucide-react';
 import styles from '../styles/Navbar.module.css';
 
 interface NavItem {
@@ -25,8 +25,8 @@ const Navbar = () => {
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Gestionnaire de fermeture au clic en dehors
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
@@ -41,6 +41,15 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Empêcher le défilement du body quand le menu mobile est ouvert
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isMobileMenuOpen]);
+
   const handleDropdown = useCallback((index: number) => {
     setActiveDropdown(activeDropdown === index ? null : index);
     setIsSearchOpen(false);
@@ -51,31 +60,52 @@ const Navbar = () => {
     setIsSearchOpen(!isSearchOpen);
     setIsCartOpen(false);
     setActiveDropdown(null);
+    setIsMobileMenuOpen(false);
   }, [isSearchOpen]);
 
   const toggleCart = useCallback(() => {
     setIsCartOpen(!isCartOpen);
     setIsSearchOpen(false);
     setActiveDropdown(null);
+    setIsMobileMenuOpen(false);
   }, [isCartOpen]);
+
+  const toggleMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+    setIsSearchOpen(false);
+    setIsCartOpen(false);
+    setActiveDropdown(null);
+  }, [isMobileMenuOpen]);
 
   return (
     <nav className={styles.navbar}>
       <div className={styles.container}>
-         <h3 className={styles.logo}>E-Commerce</h3>
-        <ul className={styles.navLinks}>
+        {/* Bouton Menu Hamburger */}
+        <button 
+          className={`${styles.mobileMenuButton} ${isMobileMenuOpen ? styles.active : ''}`}
+          onClick={toggleMobileMenu}
+          aria-label="Menu"
+        >
+          {isMobileMenuOpen ? <X className={styles.icon} /> : <Menu className={styles.icon} />}
+        </button>
+
+        <h3 className={styles.logo}>E-Commerce</h3>
+        
+        {/* Menu de navigation principal */}
+        <ul className={`${styles.navLinks} ${isMobileMenuOpen ? styles.mobileMenuOpen : ''}`}>
           {navItems.map((item, index) => (
             <li
               key={index}
               className={`${styles.navItem} nav-item`}
-              onMouseEnter={() => handleDropdown(index)}
-              onMouseLeave={() => setActiveDropdown(null)}
+              onMouseEnter={() => !isMobileMenuOpen && handleDropdown(index)}
+              onMouseLeave={() => !isMobileMenuOpen && setActiveDropdown(null)}
+              onClick={() => isMobileMenuOpen && handleDropdown(index)}
             >
               <Link href={item.path} className={styles.navLink}>
                 {item.label}
               </Link>
-              {activeDropdown === index && (
-                <div className={`${styles.dropdown} nav-dropdown`}>
+              {(activeDropdown === index || isMobileMenuOpen) && (
+                <div className={`${styles.dropdown} ${isMobileMenuOpen ? styles.mobileDropdown : ''} nav-dropdown`}>
                   <div className={styles.dropdownGroup}>
                     <h2>{item.label}</h2>
                     <ul>
@@ -107,7 +137,7 @@ const Navbar = () => {
               <Search className={styles.icon} />
             </button>
             {isSearchOpen && (
-              <div className={`${styles.dropdown} nav-dropdown`}>
+              <div className={`${styles.dropdown} nav-dropdown ${styles.searchDropdown}`}>
                 <div className={styles.dropdownGroup}>
                   <div className={styles.searchWrapper}>
                     <div className={styles.searchBox}>
@@ -145,7 +175,7 @@ const Navbar = () => {
               <ShoppingBag className={styles.icon} />
             </button>
             {isCartOpen && (
-              <div className={`${styles.dropdown} nav-dropdown`}>
+              <div className={`${styles.dropdown} nav-dropdown ${styles.cartDropdown}`}>
                 <div className={styles.dropdownGroup}>
                   <h2>Votre panier est vide.</h2>
                   <p>
