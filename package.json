@@ -15,11 +15,15 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@mui/material": "^6.2.1",
     "@mui/styled-engine-sc": "^6.2.1",
+    "@tabler/icons-react": "^3.26.0",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.15.0",
     "lucide-react": "^0.469.0",
     "next": "15.1.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "styled-components": "^6.1.13"
+    "styled-components": "^6.1.13",
+    "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

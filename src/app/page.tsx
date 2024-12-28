@@ -11,7 +11,7 @@ export default function Home() {
     <div>
          <Navbar></Navbar>
          <div style={{marginTop:"5%"}}>
-         <Main></Main>
+          <Main></Main>
          </div>
     </div>
   );
