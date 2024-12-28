@@ -1,8 +1,9 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+// next.config.js
+module.exports = {
   images: {
-    domains: ['images.unsplash.com'], // Ajoutez votre domaine ici
+    domains: [
+      'images.unsplash.com',
+      'assets.aceternity.com'
+    ],
   },
-};
-
-module.exports = nextConfig;
+}
