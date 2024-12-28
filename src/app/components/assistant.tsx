@@ -58,7 +58,7 @@ const AssistancePage = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-[1500px] mx-auto px-4 py-8">
       <div className="mb-16">
         <h2 className="text-3xl font-semibold mb-1">
           Assistance.

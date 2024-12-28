@@ -48,7 +48,7 @@ const AppleStore = () => {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 py-8">
+    <div className="max-w-[1550px] mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex justify-between items-start mb-12">
         <h1 className="text-4xl font-semibold">

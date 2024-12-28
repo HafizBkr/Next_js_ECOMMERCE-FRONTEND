@@ -8,6 +8,7 @@ import Assistant from '../app/components/assistant';
 import First from '../app/components/firstSection';
 import styles from '../../styles/Navbar.module.css';
 import './globals.css';
+import Products from "../app/components/product"
 
 export default function Home() {
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
@@ -28,6 +29,9 @@ export default function Home() {
         </div>
         <div style={{ marginTop: '1%' }}>
           <Assistant />
+        </div>
+        <div style={{ marginTop: '1%' }}>
+          <Products />
         </div>
         <div style={{ marginTop: '1%' }}>
           <Main />
