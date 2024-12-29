@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import image from "./iphone.jpg"
 
 // Types
 interface Product {
@@ -47,7 +46,7 @@ const ProductCard = ({ product }: { product: Product }) => (
     )}
     <div className="flex justify-center mb-4">
       <img
-        src={`/api/placeholder/192/192`}
+        src={product.image}
         alt={product.name}
         className="w-48 h-48 object-contain"
       />
@@ -64,30 +63,31 @@ const ProductCard = ({ product }: { product: Product }) => (
 const ProductCarousel = ({ products }: { products: Product[] }) => {
   const [startIndex, setStartIndex] = useState(0);
   const itemsToShow = 4;
+  const itemWidth = 256 + 16; // Largeur de l'élément + espacement
 
   const next = () => {
-    setStartIndex((current) => 
-      Math.min(current + itemsToShow, products.length - itemsToShow)
+    setStartIndex((current) =>
+      Math.min(current + 1, products.length - itemsToShow)
     );
   };
 
   const prev = () => {
-    setStartIndex((current) => Math.max(current - itemsToShow, 0));
+    setStartIndex((current) => Math.max(current - 1, 0));
   };
 
   return (
     <div className="relative">
       <div className="overflow-hidden">
-        <div 
+        <div
           className="flex gap-4 transition-transform duration-300"
-          style={{ transform: `translateX(-${startIndex * (256 + 16)}px)` }}
+          style={{ transform: `translateX(-${startIndex * itemWidth}px)` }}
         >
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </div>
-      
+
       {startIndex > 0 && (
         <button
           onClick={prev}
@@ -96,7 +96,7 @@ const ProductCarousel = ({ products }: { products: Product[] }) => {
           <ChevronLeft className="w-6 h-6" />
         </button>
       )}
-      
+
       {startIndex < products.length - itemsToShow && (
         <button
           onClick={next}
@@ -128,53 +128,53 @@ const accessoriesData: Section = {
     {
       id: 1,
       name: "Coque MagSafe iPhone",
-      price: 59.00,
+      price: 59.0,
       image: "./iphone.jpg",
-      colors: ["#6366f1", "#ec4899", "#8b5cf6"]
+      colors: ["#6366f1", "#ec4899", "#8b5cf6"],
     },
     {
       id: 2,
       name: "Bracelet Sport 40mm",
-      price: 49.00,
-      image: "../../../public/iphone.jpg",
-      colors: ["#4f46e5", "#7c3aed"]
+      price: 49.0,
+      image: "./bracelet.jpg",
+      colors: ["#4f46e5", "#7c3aed"],
     },
     {
       id: 3,
       name: "Bracelet Milanais",
-      price: 199.00,
-      image: "../../../public/iphone.jpg",
-      isNew: true
+      price: 199.0,
+      image: "./bracelet.jpg",
+      isNew: true,
     },
     {
       id: 4,
       name: "Coque Silicone MagSafe",
-      price: 59.00,
-      image: "../../../public/iphone.jpg",
-      colors: ["#3b82f6", "#8b5cf6", "#ec4899"]
+      price: 59.0,
+      image: "./silicone-case.jpg",
+      colors: ["#3b82f6", "#8b5cf6", "#ec4899"],
     },
     {
       id: 5,
       name: "Porte-cartes MagSafe",
-      price: 69.00,
-      image: "/wallet.jpg",
-      colors: ["#1f2937"]
+      price: 69.0,
+      image: "./wallet.jpg",
+      colors: ["#1f2937"],
     },
     {
       id: 6,
       name: "Chargeur MagSafe",
-      price: 45.00,
-      image: "../../../public/iphone.jpg",
-      isNew: true
+      price: 45.0,
+      image: "./charger.jpg",
+      isNew: true,
     },
     {
       id: 7,
       name: "Support MagSafe",
-      price: 39.00,
-      image: "/stand.jpg",
-      colors: ["#ffffff", "#1f2937"]
-    }
-  ]
+      price: 39.0,
+      image: "./stand.jpg",
+      colors: ["#ffffff", "#1f2937"],
+    },
+  ],
 };
 
 const audioData: Section = {
@@ -184,62 +184,47 @@ const audioData: Section = {
     {
       id: 1,
       name: "AirPods Pro 2",
-      price: 279.00,
-      image: "../../../public/iphone.jpg",
-      badge: "Gravure gratuite"
+      price: 279.0,
+      image: "./airpods-pro.jpg",
+      badge: "Gravure gratuite",
     },
     {
       id: 2,
       name: "AirPods Max",
-      price: 579.00,
-      image: "../../../public/iphone.jpg",
+      price: 579.0,
+      image: "./airpods-max.jpg",
       badge: "Gravure gratuite",
-      colors: ["#6b7280", "#1f2937", "#ef4444", "#22c55e"]
+      colors: ["#6b7280", "#1f2937", "#ef4444", "#22c55e"],
     },
     {
       id: 3,
       name: "HomePod mini",
-      price: 99.00,
-      image: "/homepod-mini.jpg",
-      colors: ["#1f2937", "#ef4444", "#22c55e"]
+      price: 99.0,
+      image: "./homepod-mini.jpg",
+      colors: ["#1f2937", "#ef4444", "#22c55e"],
     },
     {
-      id: 4,
-      name: "AirPods 3",
-      price: 199.00,
-      image: "../../../public/iphone.jpg",
-      badge: "Gravure gratuite"
-    },
-    {
-      id: 5,
-      name: "Beats Solo Pro",
-      price: 299.00,
-      image: "../../../public/iphone.jpg",
-      colors: ["#1f2937", "#ef4444", "#3b82f6"]
-    },
-    {
-      id: 6,
-      name: "Beats Studio Buds",
-      price: 149.00,
-      image: "../../../public/iphone.jpg",
-      isNew: true,
-      colors: ["#1f2937", "#ef4444", "#ffffff"]
-    },
-    {
-      id: 7,
-      name: "HomePod",
-      price: 299.00,
-      image: "../../../public/iphone.jpg",
-      colors: ["#1f2937", "#ffffff"]
-    },
-    {
-      id: 8,
-      name: "Beats Flex",
-      price: 69.00,
-      image: "../../../public/iphone.jpg",
-      colors: ["#1f2937", "#3b82f6", "#ef4444"]
-    }
-  ]
+        id: 4,
+        name: "HomePod mini",
+        price: 99.0,
+        image: "./homepod-mini.jpg",
+        colors: ["#1f2937", "#ef4444", "#22c55e"],
+      },
+      {
+        id: 5,
+        name: "HomePod mini",
+        price: 99.0,
+        image: "./homepod-mini.jpg",
+        colors: ["#1f2937", "#ef4444", "#22c55e"],
+      },
+      {
+        id: 6,
+        name: "HomePod mini",
+        price: 99.0,
+        image: "./homepod-mini.jpg",
+        colors: ["#1f2937", "#ef4444", "#22c55e"],
+      },
+  ],
 };
 
 // Composant principal

@@ -1,22 +1,31 @@
-"use client";
 import React, { useState } from "react";
 import { MapPin, ChevronLeft, ChevronRight } from "lucide-react";
-
+import Watch from "@/app/public/images/watch.png"
+import Iphone from "@/app/public/images/iphone.png"
+import Imac from  "@/app/public/images/mac.png"
+import Pod from  "@/app/public/images/pod.png"
+import Ipad  from  "@/app/public/images/ipad.png"
+import Vision from  "@/app/public/images/vision.png"
+import Air from  "@/app/public/images/airtag.png"
+import Cable from  "@/app/public/images/cable.png"
+import Accesories from  "@/app/public/images/accessoire.png"
+import Homepod from  "@/app/public/images/Homepod.png"
+import Gift from  "@/app/public/images/gift.png"
 const AppleStore = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const products = [
-    { name: "Mac", image: "/api/placeholder/100/100" },
-    { name: "iPhone", image: "/api/placeholder/100/100" },
-    { name: "iPad", image: "/api/placeholder/100/100" },
-    { name: "Apple Watch", image: "/api/placeholder/100/100" },
-    { name: "Apple Vision Pro", image: "/api/placeholder/100/100" },
-    { name: "AirPods", image: "/api/placeholder/100/100" },
-    { name: "AirTag", image: "/api/placeholder/100/100" },
-    { name: "Apple TV 4K", image: "/api/placeholder/100/100" },
-    { name: "HomePod", image: "/api/placeholder/100/100" },
-    { name: "Accessoires", image: "/api/placeholder/100/100" },
-    { name: "Apple Gift Card", image: "/api/placeholder/100/100" },
+    { name: "Mac", image: Imac.src },
+    { name: "iPhone", image: Iphone.src},
+    { name: "iPad", image: Ipad.src},
+    { name: "Apple Watch", image: Watch.src }, // Correct dath
+    { name: "Apple Vision Pro", image: Vision.src },
+    { name: "AirPods", image: Pod.src },
+    { name: "AirTag", image: Air.src },
+    { name: "Apple TV 4K", image: Cable.src },
+    { name: "HomePod", image: Homepod.src },
+    { name: "Accessoires", image:Accesories.src },
+    { name: "Apple Gift Card", image:Gift.src  },
   ];
 
   const newProducts = [
@@ -36,7 +45,6 @@ const AppleStore = () => {
       bgColor: "bg-white",
       textColor: "text-black",
     },
-    // autres produits...
   ];
 
   const nextSlide = () => {
@@ -50,16 +58,15 @@ const AppleStore = () => {
   return (
     <div className="max-w-[1550px] mx-auto px-4 py-8">
       {/* Header */}
-      <div className="flex justify-between items-start mb-12">
-        <h1 className="text-4xl font-semibold">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12">
+        <h1 className="text-2xl sm:text-4xl font-semibold">
           Store.
           <span className="text-gray-500 font-normal ml-2">
             Pour acheter vos produits préférés, c'est ici.
           </span>
         </h1>
-        {/* Aide Section */}
-        <div className="flex items-center gap-8">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-8 mt-4 sm:mt-0">
+          <div className="flex items-start sm:items-center gap-2">
             <img
               src="/api/placeholder/32/32"
               alt="Specialist"
@@ -67,23 +74,16 @@ const AppleStore = () => {
             />
             <div>
               <p className="text-sm">Besoin d'aide pour faire vos achats ?</p>
-              <a
-                href="#"
-                className="text-blue-600 text-sm hover:underline"
-              >
+              <a href="#" className="text-blue-600 text-sm hover:underline">
                 Contacter nos Spécialistes
               </a>
             </div>
           </div>
-          {/* Store Finder */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-start sm:items-center gap-2">
             <MapPin className="w-6 h-6" />
             <div>
               <p className="text-sm">Se rendre dans un Apple Store</p>
-              <a
-                href="#"
-                className="text-blue-600 text-sm hover:underline"
-              >
+              <a href="#" className="text-blue-600 text-sm hover:underline">
                 Trouver un magasin à proximité ›
               </a>
             </div>
@@ -91,27 +91,48 @@ const AppleStore = () => {
         </div>
       </div>
 
-      {/* Products Grid */}
-      <div className="grid grid-cols-11 gap-4 mb-16">
-        {products.map((product, index) => (
-          <a
-            key={index}
-            href="#"
-            className="flex flex-col items-center gap-2 hover:scale-105 transition-transform"
-          >
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-20 h-20 object-contain"
-            />
-            <p className="text-xs text-center">{product.name}</p>
-          </a>
-        ))}
+      {/* Products Section */}
+      <div className="mb-16">
+        <h2 className="text-xl sm:text-3xl font-semibold mb-4">
+          Produits.
+        </h2>
+        <div className="block sm:hidden overflow-x-auto flex space-x-4 pb-4">
+          {products.map((product, index) => (
+            <a
+              key={index}
+              href="#"
+              className="flex-none w-28 flex flex-col items-center gap-2 hover:scale-105 transition-transform"
+            >
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-16 h-16 object-contain"
+              />
+              <p className="text-xs text-center">{product.name}</p>
+            </a>
+          ))}
+        </div>
+        <div className="hidden sm:grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-11 gap-4">
+          {products.map((product, index) => (
+            <a
+              key={index}
+              href="#"
+              className="flex flex-col items-center gap-2 hover:scale-105 transition-transform"
+            >
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
+              />
+              <p className="text-xs text-center">{product.name}</p>
+            </a>
+          ))}
+        </div>
       </div>
 
       {/* New Products Carousel */}
       <div className="mb-12">
-        <h2 className="text-3xl font-semibold mb-1">
+        <h2 className="text-xl sm:text-3xl font-semibold mb-1">
           Les dernières nouveautés.
           <span className="text-gray-500 font-normal ml-2">
             Coup d'œil sur ce qui vient de sortir.
@@ -126,36 +147,39 @@ const AppleStore = () => {
               {newProducts.map((product, index) => (
                 <div
                   key={index}
-                  className="min-w-full flex-basis-[33.333%] px-4"
+                  className="min-w-full px-4"
                 >
                   <div
-                    className={`${product.bgColor} ${product.textColor} rounded-3xl p-8 h-[500px] flex flex-col justify-between`}
+                    className={`${product.bgColor} ${product.textColor} rounded-3xl p-6 sm:p-8 h-[400px] sm:h-[500px] flex flex-col justify-between`}
                   >
                     <div>
-                      <h3 className="text-4xl font-semibold mb-2">{product.title}</h3>
-                      <p className="text-xl mb-2">{product.subtitle}</p>
+                      <h3 className="text-2xl sm:text-4xl font-semibold mb-2">
+                        {product.title}
+                      </h3>
+                      <p className="text-lg sm:text-xl mb-2">
+                        {product.subtitle}
+                      </p>
                       <p className="text-sm opacity-90">{product.price}</p>
                     </div>
                     <img
                       src={product.image}
                       alt={product.title}
-                      className="w-full h-64 object-contain mt-8"
+                      className="w-full h-48 sm:h-64 object-contain mt-8"
                     />
                   </div>
                 </div>
               ))}
             </div>
           </div>
-          {/* Navigation Buttons */}
           <button
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 shadow-lg hover:bg-white"
+            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 shadow-lg hover:bg-white"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 shadow-lg hover:bg-white"
+            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 shadow-lg hover:bg-white"
           >
             <ChevronRight className="w-6 h-6" />
           </button>
