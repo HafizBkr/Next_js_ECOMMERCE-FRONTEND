@@ -31,7 +31,7 @@ export default function Home() {
           <Assistant />
         </div>
         <div style={{ marginTop: '1%' }}>
-          <Products />
+         <Products />
         </div>
         <div style={{ marginTop: '1%' }}>
           <Main />
