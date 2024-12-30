@@ -9,6 +9,7 @@ import First from '../app/components/firstSection';
 import styles from '../../styles/Navbar.module.css';
 import './globals.css';
 import Products from "../app/components/product"
+import Footer from "../app/components/Footer"
 
 export default function Home() {
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
@@ -36,6 +37,7 @@ export default function Home() {
         <div style={{ marginTop: '1%' }}>
           <Main />
         </div>
+        <Footer />
       </main>
     </div>
   );
