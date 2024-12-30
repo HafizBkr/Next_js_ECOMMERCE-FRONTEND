@@ -13,7 +13,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { 
-    label: 'Nouveautés', 
+    label: 'Boutique', 
     path: '/nouveautes', 
     options: ['Derniers Arrivages', 'Tendances', 'Collections', 'Marques'],
     featured: ['Nike', 'Adidas', 'Zara', 'H&M']

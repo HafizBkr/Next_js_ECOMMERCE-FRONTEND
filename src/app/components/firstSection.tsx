@@ -11,6 +11,10 @@ import Cable from  "@/app/public/images/cable.png"
 import Accesories from  "@/app/public/images/accessoire.png"
 import Homepod from  "@/app/public/images/Homepod.png"
 import Gift from  "@/app/public/images/gift.png"
+import IIphone from "@/app/public/images/iphonee.png"
+import Watch_ from "@/app/public/images/watch_.png"
+import Femme from  "@/app/public/images/femme.png"
+
 const AppleStore = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -33,7 +37,7 @@ const AppleStore = () => {
       title: "iPhone 16 Pro",
       subtitle: "L'iPhone ultime.",
       price: "ou 1 229,00 €",
-      image: "/api/placeholder/600/600",
+      image: IIphone.src,
       bgColor: "bg-black",
       textColor: "text-white",
     },
@@ -41,10 +45,11 @@ const AppleStore = () => {
       title: "Apple Watch Series 10",
       subtitle: "Encore plus fine. Toujours plus grande.",
       price: "À partir de 449 €",
-      image: "/api/placeholder/600/600",
+      image: Watch_.src,
       bgColor: "bg-white",
       textColor: "text-black",
     },
+    
   ];
 
   const nextSlide = () => {
@@ -68,7 +73,7 @@ const AppleStore = () => {
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-8 mt-4 sm:mt-0">
           <div className="flex items-start sm:items-center gap-2">
             <img
-              src="/api/placeholder/32/32"
+              src={Femme.src}
               alt="Specialist"
               className="w-8 h-8 rounded-full"
             />
@@ -131,46 +136,48 @@ const AppleStore = () => {
       </div>
 
       {/* New Products Carousel */}
-      <div className="mb-12">
-        <h2 className="text-xl sm:text-3xl font-semibold mb-1">
-          Les dernières nouveautés.
-          <span className="text-gray-500 font-normal ml-2">
-            Coup d'œil sur ce qui vient de sortir.
-          </span>
-        </h2>
-        <div className="relative mt-8">
-          <div className="flex overflow-hidden">
-            <div
-              className="flex transition-transform duration-500 ease-out"
-              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-            >
-              {newProducts.map((product, index) => (
-                <div
-                  key={index}
-                  className="min-w-full px-4"
-                >
+              <div className="mb-12">
+          <h2 className="text-xl sm:text-3xl font-semibold mb-1">
+            Les dernières nouveautés.
+            <span className="text-gray-500 font-normal ml-2">
+              Coup d'œil sur ce qui vient de sortir.
+            </span>
+          </h2>
+          <div className="relative mt-8">
+            <div className="flex overflow-hidden">
+              <div
+                className="flex transition-transform duration-500 ease-out"
+                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+              >
+                {newProducts.map((product, index) => (
                   <div
-                    className={`${product.bgColor} ${product.textColor} rounded-3xl p-6 sm:p-8 h-[400px] sm:h-[500px] flex flex-col justify-between`}
+                    key={index}
+                    className="min-w-full px-4"
                   >
-                    <div>
-                      <h3 className="text-2xl sm:text-4xl font-semibold mb-2">
-                        {product.title}
-                      </h3>
-                      <p className="text-lg sm:text-xl mb-2">
-                        {product.subtitle}
-                      </p>
-                      <p className="text-sm opacity-90">{product.price}</p>
+                    <div
+                      className={`${product.bgColor} ${product.textColor} rounded-3xl p-6 sm:p-8 h-[400px] sm:h-[500px] flex flex-col`}
+                    >
+                      <div className="mb-4">
+                        <h3 className="text-2xl sm:text-4xl font-semibold mb-2">
+                          {product.title}
+                        </h3>
+                        <p className="text-lg sm:text-xl mb-2">
+                          {product.subtitle}
+                        </p>
+                        <p className="text-sm opacity-90">{product.price}</p>
+                      </div>
+                      <div className="flex-grow h-full relative">
+                        <img
+                          src={product.image}
+                          alt={product.title}
+                          className="absolute inset-0 w-full h-full object-contain"
+                        />
+                      </div>
                     </div>
-                    <img
-                      src={product.image}
-                      alt={product.title}
-                      className="w-full h-48 sm:h-64 object-contain mt-8"
-                    />
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
           <button
             onClick={prevSlide}
             className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 shadow-lg hover:bg-white"
