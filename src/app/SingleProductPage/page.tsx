@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import styles from '../../../styles/Navbar.module.css';
-import Prodcuts from "@/app/components/Products/mainstore"
+import SingleProduct from "@/app/components/Products/SingleProduct"
 import Footer from '../components/Footer';
 
 
@@ -21,7 +21,7 @@ export default function Home() {
         className={`${styles.mainContent} ${activeDropdown !== null ? styles.blur : ''}`}
       >
           <div style={{ marginTop: '5%' }}>
-          <Prodcuts />
+          <SingleProduct />
            </div>
            <div style={{ marginTop: '5%' }}>
           <Footer />
