@@ -225,7 +225,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
                   <div className={styles.cartLinks}>
                     <ul>
                       <li><Link href="/profile" className={styles.dropdownLink}>Mon profil</Link></li>
-                      <li><Link href="/orders" className={styles.dropdownLink}>Commandes</Link></li>
+                      <li><Link href="/Panier" className={styles.dropdownLink}>Commandes</Link></li>
                       <li><Link href="/saved" className={styles.dropdownLink}>Articles sauvegardés</Link></li>
                       <li><Link href="/account" className={styles.dropdownLink}>Compte</Link></li>
                       <li><Link href="/login" className={styles.dropdownLink}>Se connecter</Link></li>
