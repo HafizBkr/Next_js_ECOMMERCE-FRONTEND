@@ -21,7 +21,7 @@ export default function Home() {
       <main 
         className={`${styles.mainContent} ${activeDropdown !== null ? styles.blur : ''}`}
       >
-        <div className="mt-8 md:mt-16">
+        <div className="mt-8 md:mt-18d">
         <Panier />
         </div>
          <Footer />
