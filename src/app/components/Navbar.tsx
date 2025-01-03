@@ -19,25 +19,25 @@ const navItems: NavItem[] = [
     featured: ['Nike', 'Adidas', 'Zara', 'H&M']
   },
   { 
-    label: 'Homme', 
+    label: 'Ordinateur', 
     path: '/homme', 
     options: ['Vêtements', 'Chaussures', 'Accessoires', 'Sport', 'Luxe'],
     featured: ['Meilleures ventes', 'Nouveautés', 'Promos']
   },
   { 
-    label: 'Femme', 
+    label: 'Mobile', 
     path: '/femme', 
     options: ['Vêtements', 'Chaussures', 'Sacs', 'Bijoux', 'Sport'],
     featured: ['Tendances', 'Nouveautés', 'Outlet']
   },
   { 
-    label: 'Tech', 
+    label: 'Telephones', 
     path: '/tech', 
     options: ['Smartphones', 'Ordinateurs', 'Gaming', 'Audio', 'Accessoires'],
     featured: ['Apple', 'Samsung', 'PlayStation', 'Xbox']
   },
   { 
-    label: 'Lifestyle', 
+    label: 'Accessoires', 
     path: '/lifestyle', 
     options: ['Déco', 'Beauté', 'Sport', 'Bien-être', 'Maison'],
     featured: ['Promos', 'Nouveautés']
@@ -47,6 +47,11 @@ const navItems: NavItem[] = [
     path: '/promos', 
     options: ['Deals du Jour', '-50% et plus', 'Ventes Flash', 'Outlet'],
     featured: ['Meilleures offres']
+  },
+  { 
+    label: 'Evenements', 
+    path: '/events', 
+    options: ['Concert', 'Prieres', 'Match'],
   }
 ];
 
