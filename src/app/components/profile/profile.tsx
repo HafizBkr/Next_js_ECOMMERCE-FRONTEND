@@ -36,8 +36,8 @@ const ModernProfile = () => {
                     T
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold">Thomas Durant</h2>
-                    <p className="text-gray-600">thomas.durant@email.com</p>
+                    <h2 className="text-2xl font-bold">Hafiz BOUKARI</h2>
+                    <p className="text-gray-600">hafizinovus@email.com</p>
                   </div>
                 </div>
 

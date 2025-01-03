@@ -1,83 +1,31 @@
-"use client"
-import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
-import { useState } from 'react';
-import billet from "../public/images/billet.png";
+'use client';
 
-interface Event {
-  id: string;
-  name: string;
-  description: string;
-  location: { lat: number; lng: number };
-}
+import React, { useState } from 'react';
+import Navbar from '../components/Navbar';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import styles from "../../../styles/Navbar.module.css";
+import Footer from "../../app/components/Footer"
+import Events from "../components/events/evnts"
 
-const events: Event[] = [
-  {
-    id: '1',
-    name: 'Concert à Lomé',
-    description: 'Un concert incroyable pour toute la famille !',
-    location: { lat: 6.1725, lng: 1.2312 },
-  },
-  {
-    id: '2',
-    name: 'Théâtre à Lomé',
-    description: 'Venez découvrir une pièce captivante.',
-    location: { lat: 6.1373, lng: 1.2121 },
-  },
-  {
-    id: '3',
-    name: 'Projection de film',
-    description: 'Une expérience cinématographique unique !',
-    location: { lat: 6.1857, lng: 1.2248 },
-  },
-];
-
-const Map = () => {
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-
-  const containerStyle = {
-    width: '100%',
-    height: '500px',
+export default function Home() {
+  const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+  const handleDropdownChange = (dropdown: number | null) => { 
+    setActiveDropdown(dropdown);
   };
 
-  const center = { lat: 6.1725, lng: 1.2312 };
-
   return (
-    <LoadScript googleMapsApiKey="AIzaSyCTaXylfQ6qZvjZmIB_SkCi62l4TF107Eg">
-      <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={13}>
-        {events.map((event) => (
-          <Marker
-            key={event.id}
-            position={event.location}
-            onClick={() => setSelectedEvent(event)}
-            icon={{
-              url: billet.src,
-              scaledSize: typeof window !== 'undefined' && window.google
-                ? new window.google.maps.Size(30, 30)
-                : undefined, // Vérification avant d'utiliser google.maps
-            }}
-          />
-        ))}
+    <div>
+      <Navbar activeDropdown={activeDropdown} onDropdownChange={handleDropdownChange} />
 
-        {selectedEvent && (
-          <InfoWindow
-            position={selectedEvent.location}
-            onCloseClick={() => setSelectedEvent(null)}
-          >
-            <div>
-              <h3 className="text-lg font-bold">{selectedEvent.name}</h3>
-              <p className="text-sm">{selectedEvent.description}</p>
-              <button
-                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-                onClick={() => alert(`Réservation confirmée pour : ${selectedEvent.name}`)}
-              >
-                Réserver
-              </button>
-            </div>
-          </InfoWindow>
-        )}
-      </GoogleMap>
-    </LoadScript>
+      {/* Contenu principal avec un flou conditionnel basé sur activeDropdown */}
+      <main 
+        className={`${styles.mainContent} ${activeDropdown !== null ? styles.blur : ''}`}
+      >
+        <div className="mt-8 md:mt-18d">
+        <Events />
+        </div>
+         <Footer />
+      </main>
+    </div>
   );
-};
-
-export default Map;
+}
