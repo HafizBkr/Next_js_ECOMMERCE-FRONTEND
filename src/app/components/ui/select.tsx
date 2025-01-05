@@ -139,10 +139,10 @@ export const SelectContent = ({ children }: { children: React.ReactNode }) => {
 };
 
 // Composant SelectItem (Ajouté)
-export const SelectItem = ({ value, children }: { value: string | number, children: React.ReactNode }) => {
-  return (
-    <div className="select-item" value={value}>
-      {children}
-    </div>
-  );
-};
+// export const SelectItem = ({ value, children }: { value: string | number, children: React.ReactNode }) => {
+//   return (
+//     <div className="select-item" value={value}>
+//       {children}
+//     </div>
+//   );
+// };

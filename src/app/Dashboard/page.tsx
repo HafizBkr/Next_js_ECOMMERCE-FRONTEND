@@ -106,10 +106,9 @@ const AdminDashboard = () => {
               products={products}
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
-              onAddProduct={handleAddProduct}
             />
           )}
-          {activeSection === 'events' && <EventSection events={events} onAddEvent={handleAddEvent} />}
+          {activeSection === 'events' && <EventSection />}
           {activeSection === 'customers' && (
             <CustomerSection customers={customers} onAddCustomer={handleAddCustomer} />
           )}
