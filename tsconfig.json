@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/components/Dashboard/sidebar.jsx", "src/app/components/Dashboard/header.jsx", "src/app/components/Dashboard/statscard.jsx", "src/app/components/ui/textarea.jsx", "src/app/components/ui/select.tsx"],
   "exclude": ["node_modules"]
 }
