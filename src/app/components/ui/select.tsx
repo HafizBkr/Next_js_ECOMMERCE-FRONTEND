@@ -1,5 +1,3 @@
-// Composant Select
-
 import React, { forwardRef } from 'react';
 
 // Types
@@ -34,99 +32,117 @@ interface SelectProps extends BaseProps,
   placeholder?: string;
 }
 
-
+// Composant Select
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(({ 
-    label,
-    error,
-    options = [],
-    placeholder,
-    className = "",
-    disabled,
-    ...props
-  }, ref) => {
-    const baseSelectStyles = `
-      w-full
-      px-4
-      py-2
-      border
-      rounded-lg
-      bg-white
-      appearance-none
-      transition-colors
-      duration-200
-      focus:outline-none
-      focus:ring-2
-      focus:ring-blue-500
-      disabled:opacity-50
-      disabled:cursor-not-allowed
-    `;
+  label,
+  error,
+  options = [],
+  placeholder,
+  className = "",
+  disabled,
+  ...props
+}, ref) => {
+  const baseSelectStyles = `
+    w-full
+    px-4
+    py-2
+    border
+    rounded-lg
+    bg-white
+    appearance-none
+    transition-colors
+    duration-200
+    focus:outline-none
+    focus:ring-2
+    focus:ring-blue-500
+    disabled:opacity-50
+    disabled:cursor-not-allowed
+  `;
   
-    const selectStyles = cn(
-      baseSelectStyles,
-      error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300',
-      className
-    );
+  const selectStyles = cn(
+    baseSelectStyles,
+    error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300',
+    className
+  );
   
-    return (
-      <div className="space-y-1">
-        {label && (
-          <label 
-            htmlFor={props.id}
-            className="block text-sm font-medium text-gray-700"
-          >
-            {label}
-          </label>
-        )}
-        <div className="relative">
-          <select
-            ref={ref}
-            className={selectStyles}
-            disabled={disabled}
-            aria-invalid={error ? 'true' : 'false'}
-            aria-describedby={error ? `${props.id}-error` : undefined}
-            {...props}
-          >
-            {placeholder && (
-              <option value="" disabled>
-                {placeholder}
-              </option>
-            )}
-            {options.map((option) => (
-              <option 
-                key={option.value} 
-                value={option.value}
-              >
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-            <svg 
-              className="w-4 h-4 text-gray-400" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
+  return (
+    <div className="space-y-1">
+      {label && (
+        <label 
+          htmlFor={props.id}
+          className="block text-sm font-medium text-gray-700"
+        >
+          {label}
+        </label>
+      )}
+      <div className="relative">
+        <select
+          ref={ref}
+          className={selectStyles}
+          disabled={disabled}
+          aria-invalid={error ? 'true' : 'false'}
+          aria-describedby={error ? `${props.id}-error` : undefined}
+          {...props}
+        >
+          {placeholder && (
+            <option value="" disabled>
+              {placeholder}
+            </option>
+          )}
+          {options.map((option) => (
+            <option 
+              key={option.value} 
+              value={option.value}
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth="2" 
-                d="M19 9l-7 7-7-7" 
-              />
-            </svg>
-          </div>
-        </div>
-        {error && (
-          <p 
-            className="text-sm text-red-600"
-            id={`${props.id}-error`}
-            role="alert"
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+          <svg 
+            className="w-4 h-4 text-gray-400" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
           >
-            {error}
-          </p>
-        )}
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth="2" 
+              d="M19 9l-7 7-7-7" 
+            />
+          </svg>
+        </div>
       </div>
-    );
-  });
-  
-  Select.displayName = 'Select';
+      {error && (
+        <p 
+          className="text-sm text-red-600"
+          id={`${props.id}-error`}
+          role="alert"
+        >
+          {error}
+        </p>
+      )}
+    </div>
+  );
+});
+
+Select.displayName = 'Select';
+
+// Composant SelectContent
+export const SelectContent = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div className="select-content">
+      {children}
+    </div>
+  );
+};
+
+// Composant SelectItem (Ajouté)
+export const SelectItem = ({ value, children }: { value: string | number, children: React.ReactNode }) => {
+  return (
+    <div className="select-item" value={value}>
+      {children}
+    </div>
+  );
+};
