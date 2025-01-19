@@ -7,7 +7,8 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
     { id: 'orders', icon: ShoppingCart, label: 'Commandes' },
     { id: 'events', icon: Calendar, label: 'Événements' },
     { id: 'customers', icon: Users, label: 'Clients' },
-    { id: 'categories', icon: Tag, label: 'Catégories' }
+    { id: 'pcategories', icon: Tag, label: 'Product Catégories' },
+    { id: 'ecategories', icon: Tag, label: 'Events Catégories' }
   ];
 
   return (
