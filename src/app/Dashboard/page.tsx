@@ -127,7 +127,7 @@ const AdminDashboard = () => {
           {activeSection === 'customers' && (
             <CustomerSection customers={customers} onAddCustomer={handleAddCustomer} />
           )}
-          {activeSection === 'categories' && (
+          {activeSection === 'pcategories' && (
             <CategorySection categories={categories} onAddCategory={handleAddCategory} />
           )}
         </main>
