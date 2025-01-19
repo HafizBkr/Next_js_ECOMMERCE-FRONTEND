@@ -14,9 +14,6 @@ const CategorySection = ({ categories, onAddCategory }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Envoi de la nouvelle catégorie au backend ou gestion d'état local
-    // Vous pouvez appeler une fonction pour mettre à jour les catégories ici, 
-    // par exemple : onAddCategory(newCategory);
     console.log('Catégorie ajoutée :', newCategory);
     setNewCategory({ name: '', description: '', status: 'active' }); // Réinitialiser le formulaire
   };

@@ -9,6 +9,7 @@ import ProductSection from '../components/Dashboard/productSection';
 import EventSection from '../components/Dashboard/EventSection';
 import CustomerSection from '../components/Dashboard/CustomerSection';
 import CategorySection from '../components/Dashboard/CategorySection';
+import EvCategorySection from '../components/Dashboard/EventCategorySection';
 import useAuth from '../hooks/useAuth'; 
 
 // Types pour les données
@@ -92,6 +93,7 @@ const AdminDashboard = () => {
     { id: 1, name: 'Catégorie A', description: 'Description A', productsCount: 10, subcategories: ['Sous-cat 1'], status: 'Active' },
   ];
 
+
   // Gestionnaires d'ajout
   const handleAddProduct = () => setShowAddForm(true);
   const handleAddEvent = () => setShowAddForm(true);
@@ -129,6 +131,9 @@ const AdminDashboard = () => {
           )}
           {activeSection === 'pcategories' && (
             <CategorySection categories={categories} onAddCategory={handleAddCategory} />
+          )}
+           {activeSection === 'ecategories' && (
+            <EvCategorySection />
           )}
         </main>
       </div>
