@@ -1,5 +1,7 @@
+// /src/app/dashboard/AdminDashboard.tsx
 "use client"
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation'; // Utilisation de next/navigation pour la redirection côté serveur
 import Sidebar from '../components/Dashboard/sidebar';
 import Header from '../components/Dashboard/header';
 import Overview from '../components/Dashboard/overview';
@@ -7,6 +9,7 @@ import ProductSection from '../components/Dashboard/productSection';
 import EventSection from '../components/Dashboard/EventSection';
 import CustomerSection from '../components/Dashboard/CustomerSection';
 import CategorySection from '../components/Dashboard/CategorySection';
+import useAuth from '../hooks/useAuth'; 
 
 // Types pour les données
 type Stats = {
@@ -60,6 +63,7 @@ const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState<string>('overview');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
+  const router = useRouter(); // Redirection avec next/navigation
 
   // États simulés pour les données
   const stats: Stats = {
@@ -93,6 +97,17 @@ const AdminDashboard = () => {
   const handleAddEvent = () => setShowAddForm(true);
   const handleAddCustomer = () => setShowAddForm(true);
   const handleAddCategory = () => setShowAddForm(true);
+
+  // Vérifier l'existence du token dans localStorage
+  useEffect(() => {
+    const token = localStorage.getItem('admin_token');
+    if (!token) {
+      // Si aucun token n'est trouvé, rediriger vers la page de connexion
+      router.push('/login');
+    }
+  }, [router]);
+
+  useAuth();
 
   return (
     <div className="flex h-screen bg-gray-100">
