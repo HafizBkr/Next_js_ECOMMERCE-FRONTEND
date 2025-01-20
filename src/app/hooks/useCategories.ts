@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface Category {
   id: string;
@@ -18,7 +18,8 @@ const useCategories = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchCategories = async () => {
+  // Fonction pour récupérer les catégories
+  const fetchCategories = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -42,8 +43,9 @@ const useCategories = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
+  // Ajouter une nouvelle catégorie
   const addCategory = async (categoryData: CategoryFormData) => {
     setError(null);
     const token = localStorage.getItem('admin_token');
@@ -73,9 +75,8 @@ const useCategories = () => {
         );
       }
 
-      const data: Category = await response.json();
-      setCategories((prevCategories) => [...prevCategories, data]);
-      return data;
+      // Récupérer les catégories mises à jour après ajout
+      await fetchCategories();
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -87,6 +88,7 @@ const useCategories = () => {
     }
   };
 
+  // Modifier une catégorie
   const editCategory = async (id: string, categoryData: CategoryFormData) => {
     setError(null);
     const token = localStorage.getItem('admin_token');
@@ -94,7 +96,7 @@ const useCategories = () => {
       setError('Token d\'administration manquant');
       return;
     }
-    
+
     try {
       const response = await fetch(`http://localhost:8080/categories/${id}`, {
         method: 'PUT',
@@ -116,11 +118,8 @@ const useCategories = () => {
         );
       }
 
-      const data: Category = await response.json();
-      setCategories((prevCategories) =>
-        prevCategories.map((category) => (category.id === id ? data : category))
-      );
-      return data;
+      // Récupérer les catégories mises à jour après modification
+      await fetchCategories();
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -132,6 +131,7 @@ const useCategories = () => {
     }
   };
 
+  // Supprimer une catégorie
   const deleteCategory = async (id: string) => {
     setError(null);
     const token = localStorage.getItem('admin_token');
@@ -157,9 +157,8 @@ const useCategories = () => {
         );
       }
 
-      setCategories((prevCategories) =>
-        prevCategories.filter((category) => category.id !== id)
-      );
+      // Récupérer les catégories mises à jour après suppression
+      await fetchCategories();
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -171,9 +170,10 @@ const useCategories = () => {
     }
   };
 
+  // Charger les catégories au démarrage
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [fetchCategories]);
 
   return {
     categories,
