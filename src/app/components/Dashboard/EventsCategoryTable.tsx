@@ -109,45 +109,42 @@ const EventCategoryTable: React.FC = () => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              {HEADERS.map(header => (
-                <th
-                  key={header.id}
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  {header.label}
-                </th>
-              ))}
+                        {HEADERS.map((header, index) => (
+            <th
+                key={`${header.id}-${index}`} // Assurez-vous que la clé est unique
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+                {header.label}
+            </th>
+            ))}
+
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
-            {categories.map((category) => (
-              <tr 
-                key={category.id}
-                className="hover:bg-gray-100 transition-colors"
-              >
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{category.label}</div>
-                </td>
+          <tbody className="divide-y divide-gray-200 bg-white">
+  {categories.map((category, index) => (
+    <tr key={`${category.id}-${index}`} className="hover:bg-gray-100 transition-colors">
+      <td className="px-6 py-4 whitespace-nowrap">{category.label}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3">
                     <button
-                      onClick={() => openModal(category)}
-                      className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition-colors"
+                        onClick={() => openModal(category)}
+                        className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition-colors"
                     >
-                      <Edit className="w-5 h-5" />
+                        <Edit className="w-5 h-5" />
                     </button>
                     <button
-                      onClick={() => handleDelete(category.id)}
-                      className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors"
+                        onClick={() => handleDelete(category.id)}
+                        className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors"
                     >
-                      <Trash2 className="w-5 h-5" />
+                        <Trash2 className="w-5 h-5" />
                     </button>
-                  </div>
+                    </div>
                 </td>
-              </tr>
+                </tr>
             ))}
-          </tbody>
+            </tbody>
+
         </table>
       </div>
 

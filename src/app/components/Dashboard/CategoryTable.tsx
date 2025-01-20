@@ -112,62 +112,63 @@ const CategoryTable: React.FC = () => {
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-gray-200">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead key="header" className="bg-gray-50">
-            <tr>
-              {HEADERS.map(header => (
-                <th
-                  key={header.id}
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  {header.label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody key="body" className="divide-y divide-gray-200">
-            {categories.map((category) => (
-              <tr 
-                key={category.id}
-                className="hover:bg-gray-100 transition-colors"
-              >
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{category.nom}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{category.nombre_produits}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`px-3 py-1 inline-flex items-center rounded-full text-xs font-medium ${
-                      category.statut === 'active'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}
-                  >
-                    {category.statut === 'active' ? 'Actif' : 'Inactif'}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => openModal(category)}
-                      className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition-colors"
-                    >
-                      <Edit className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(category.id)}
-                      className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+      <table className="min-w-full divide-y divide-gray-200">
+  <thead className="bg-gray-50">
+    <tr>
+      {HEADERS.map(header => (
+        <th
+          key={header.id}
+          scope="col"
+          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+        >
+          {header.label}
+        </th>
+      ))}
+    </tr>
+  </thead>
+  <tbody className="divide-y divide-gray-200">
+  {categories.map((category, index) => (
+    <tr 
+      key={`${category.id}-${index}`}  // Utilisation de l'index pour garantir l'unicité
+      className="hover:bg-gray-100 transition-colors"
+    >
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="text-sm font-medium text-gray-900">{category.nom}</div>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="text-sm text-gray-900">{category.nombre_produits}</div>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <span
+          className={`px-3 py-1 inline-flex items-center rounded-full text-xs font-medium ${
+            category.statut === 'active'
+              ? 'bg-green-100 text-green-800'
+              : 'bg-gray-100 text-gray-800'
+          }`}
+        >
+          {category.statut === 'active' ? 'Actif' : 'Inactif'}
+        </span>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => openModal(category)}
+            className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition-colors"
+          >
+            <Edit className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => handleDelete(category.id)}
+            className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors"
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
+        </div>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
         </table>
       </div>
 

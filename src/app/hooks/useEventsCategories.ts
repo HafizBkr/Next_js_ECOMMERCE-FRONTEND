@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface EventCategory {
   id: string;
@@ -14,7 +14,8 @@ const useEventCategories = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchEventCategories = async () => {
+  // Récupération des catégories
+  const fetchEventCategories = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -38,7 +39,7 @@ const useEventCategories = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const addEventCategory = async (categoryData: EventCategoryFormData) => {
     setError(null);
@@ -66,9 +67,8 @@ const useEventCategories = () => {
         );
       }
 
-      const data: EventCategory = await response.json();
-      setCategories((prevCategories) => [...prevCategories, data]);
-      return data;
+      // Récupérer les données actualisées après ajout
+      await fetchEventCategories();
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -76,7 +76,6 @@ const useEventCategories = () => {
         setError("Erreur inconnue");
       }
       console.error('Erreur détaillée:', err);
-      throw err;
     }
   };
 
@@ -87,7 +86,7 @@ const useEventCategories = () => {
       setError('Token d\'administration manquant');
       return;
     }
-    
+
     try {
       const response = await fetch(`http://localhost:8080/event-categories/${id}`, {
         method: 'PUT',
@@ -106,11 +105,8 @@ const useEventCategories = () => {
         );
       }
 
-      const data: EventCategory = await response.json();
-      setCategories((prevCategories) =>
-        prevCategories.map((category) => (category.id === id ? data : category))
-      );
-      return data;
+      // Récupérer les données actualisées après modification
+      await fetchEventCategories();
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -118,7 +114,6 @@ const useEventCategories = () => {
         setError("Erreur inconnue");
       }
       console.error('Erreur détaillée:', err);
-      throw err;
     }
   };
 
@@ -134,36 +129,37 @@ const useEventCategories = () => {
       const response = await fetch(`http://localhost:8080/event-categories/${id}`, {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
       });
 
+      const text = await response.text();
+      let errorData;
+      try {
+        errorData = text ? JSON.parse(text) : null;
+      } catch (e) {
+        errorData = text;
+      }
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
         throw new Error(
           `Erreur lors de la suppression de la catégorie: ${response.status} ${response.statusText}` +
           (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : '')
         );
       }
 
-      setCategories((prevCategories) =>
-        prevCategories.filter((category) => category.id !== id)
-      );
+      // Récupérer les données actualisées après suppression
+      await fetchEventCategories();
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Erreur inconnue");
-      }
+      const errorMessage = err instanceof Error ? err.message : "Erreur lors de la suppression";
       console.error('Erreur détaillée:', err);
-      throw err;
+      setError(errorMessage);
     }
   };
 
   useEffect(() => {
     fetchEventCategories();
-  }, []);
+  }, [fetchEventCategories]);
 
   return {
     categories,
