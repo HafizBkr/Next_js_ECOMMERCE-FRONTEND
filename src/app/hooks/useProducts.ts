@@ -82,31 +82,60 @@ const useProducts = (): UseProductsReturn => {
   const createProduct = async (productData: ProductFormData) => {
     setLoading(true);
     setError(null);
-
+  
     try {
-      const photoUrls = await uploadImages(productData.photos);
-
+      // Log des données reçues
+      console.log('Données reçues dans createProduct:', productData);
+  
+      // Vérification du token
+      const token = localStorage.getItem('admin_token');
+      if (!token) {
+        throw new Error('Token d\'administration manquant');
+      }
+  
+      // Préparation des données à envoyer
+      const dataToSend = {
+        nom: productData.nom,
+        prix: Number(productData.prix),
+        stock: Number(productData.stock),
+        etat: productData.etat,
+        photos: [], // On gèrera l'upload des photos séparément
+        categorie_id: productData.categorie_id,
+        localisation: productData.localisation,
+        description: productData.description,
+        marque: productData.marque,
+        modele: productData.modele,
+        disponible: productData.disponible
+      };
+  
+      // Log des données formatées
+      console.log('Données formatées pour l\'envoi:', dataToSend);
+  
       const response = await fetch('http://localhost:8080/products', {
         method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({
-          ...productData,
-          prix: Number(productData.prix),
-          stock: Number(productData.stock),
-          photos: photoUrls,
-        }),
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataToSend)
       });
-
+  
+      // Log de la réponse complète
+      console.log('Status:', response.status);
+      console.log('Headers:', Object.fromEntries(response.headers.entries()));
+  
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
+        console.log('Données d\'erreur:', errorData);
         throw new Error(
           `Erreur lors de la création du produit: ${response.status} ${response.statusText}` +
           (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : '')
         );
       }
-
+  
       await getAllProducts();
     } catch (err) {
+      console.error('Erreur complète:', err);
       handleApiError(err);
     } finally {
       setLoading(false);
