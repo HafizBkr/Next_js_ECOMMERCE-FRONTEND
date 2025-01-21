@@ -4,7 +4,7 @@ import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import { Card, CardContent } from '../ui/card';
 import ProductTable from './productTable';
-import { AddProductForm } from './forms/addProduct';
+import {AddProductForm} from './forms/addProduct';
 
 const ProductSection = ({ products, searchTerm, setSearchTerm }) => {
   // État pour contrôler l'ouverture/fermeture du formulaire

@@ -1,22 +1,49 @@
 import { useState, useRef } from 'react';
+import useCategories from '../../../hooks/useCategories';
 
-const AddProductForm = ({ isOpen, onClose, onSubmit }) => {
+export const AddProductForm = ({ isOpen, onClose, onSubmit }) => {
+  const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
   const [formData, setFormData] = useState({
-    name: '',
-    price: '',
+    nom: '',
+    prix: '',
     stock: '',
-    category: '',
-    condition: '',
-    location: '',
-    description: ''
+    etat: '',
+    categorie_id: '',
+    localisation: '',
+    description: '',
+    marque: '',
+    modele: '',
+    disponible: true
   });
   const [images, setImages] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
+  const productData = {
+    nom: formData.nom,
+    prix: Number(formData.prix),
+    stock: Number(formData.stock),
+    etat: formData.etat,
+    photos: [], // On envoie d'abord un tableau vide, l'upload des images sera géré séparément
+    categorie_id: formData.categorie_id,
+    localisation: formData.localisation,
+    description: formData.description,
+    marque: formData.marque,
+    modele: formData.modele,
+    disponible: formData.disponible
+  };
+
+  // Log des données avant envoi
+  console.log('Données à envoyer:', productData);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ ...formData, images });
+    const productData = {
+      ...formData,
+      prix: Number(formData.prix),
+      stock: Number(formData.stock),
+      photos: images.map(img => img.file)
+    };
+    onSubmit(productData);
     onClose();
   };
 
@@ -76,18 +103,42 @@ const AddProductForm = ({ isOpen, onClose, onSubmit }) => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium">Nom du produit</label>
+            <label htmlFor="nom" className="block text-sm font-medium">Nom du produit</label>
             <input
-              id="name"
+              id="nom"
               className="w-full border rounded-md p-2"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              value={formData.nom}
+              onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
               placeholder="iPhone 15 Plus 128Go"
               required
             />
           </div>
 
-          {/* Image upload section */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="marque" className="block text-sm font-medium">Marque</label>
+              <input
+                id="marque"
+                className="w-full border rounded-md p-2"
+                value={formData.marque}
+                onChange={(e) => setFormData({ ...formData, marque: e.target.value })}
+                placeholder="Apple"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="modele" className="block text-sm font-medium">Modèle</label>
+              <input
+                id="modele"
+                className="w-full border rounded-md p-2"
+                value={formData.modele}
+                onChange={(e) => setFormData({ ...formData, modele: e.target.value })}
+                placeholder="iPhone 15"
+                required
+              />
+            </div>
+          </div>
+
           <div className="space-y-2">
             <label className="block text-sm font-medium">Photos du produit</label>
             <div
@@ -118,7 +169,6 @@ const AddProductForm = ({ isOpen, onClose, onSubmit }) => {
               </div>
             </div>
 
-            {/* Image previews */}
             {images.length > 0 && (
               <div className="grid grid-cols-3 gap-4 mt-4">
                 {images.map((image) => (
@@ -144,13 +194,14 @@ const AddProductForm = ({ isOpen, onClose, onSubmit }) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="price" className="block text-sm font-medium">Prix (€)</label>
+              <label htmlFor="prix" className="block text-sm font-medium">Prix (€)</label>
               <input
-                id="price"
+                id="prix"
                 type="number"
+                step="0.01"
                 className="w-full border rounded-md p-2"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                value={formData.prix}
+                onChange={(e) => setFormData({ ...formData, prix: e.target.value })}
                 placeholder="779.00"
                 required
               />
@@ -170,28 +221,57 @@ const AddProductForm = ({ isOpen, onClose, onSubmit }) => {
           </div>
 
           <div>
-            <label htmlFor="condition" className="block text-sm font-medium">État</label>
+            <label htmlFor="categorie_id" className="block text-sm font-medium">Catégorie</label>
             <select
-              id="condition"
+              id="categorie_id"
               className="w-full border rounded-md p-2"
-              value={formData.condition}
-              onChange={(e) => setFormData({ ...formData, condition: e.target.value })}
+              value={formData.categorie_id}
+              onChange={(e) => setFormData({ ...formData, categorie_id: e.target.value })}
+              required
+              disabled={categoriesLoading}
+            >
+              <option value="">Sélectionnez une catégorie</option>
+              {categories
+                ?.filter(cat => cat.statut === 'active')
+                .map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.nom}
+                  </option>
+              ))}
+            </select>
+            {categoriesError && (
+              <p className="text-red-500 text-sm mt-1">
+                Erreur de chargement des catégories
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="etat" className="block text-sm font-medium">État</label>
+            <select
+              id="etat"
+              className="w-full border rounded-md p-2"
+              value={formData.etat}
+              onChange={(e) => setFormData({ ...formData, etat: e.target.value })}
+              required
             >
               <option value="">Sélectionnez l'état</option>
-              <option value="new">Neuf</option>
-              <option value="like-new">Reconditionné - Comme neuf</option>
-              <option value="used">Occasion</option>
+              <option value="Neuf">Neuf</option>
+              <option value="Très bon état">Très bon état</option>
+              <option value="Bon état">Bon état</option>
+              <option value="État correct">État correct</option>
             </select>
           </div>
 
           <div>
-            <label htmlFor="location" className="block text-sm font-medium">Localisation</label>
+            <label htmlFor="localisation" className="block text-sm font-medium">Localisation</label>
             <input
-              id="location"
+              id="localisation"
               className="w-full border rounded-md p-2"
-              value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              value={formData.localisation}
+              onChange={(e) => setFormData({ ...formData, localisation: e.target.value })}
               placeholder="Paris 11ème"
+              required
             />
           </div>
 
@@ -204,20 +284,33 @@ const AddProductForm = ({ isOpen, onClose, onSubmit }) => {
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Description détaillée du produit"
               rows={4}
+              required
             />
+          </div>
+
+          <div>
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={formData.disponible}
+                onChange={(e) => setFormData({ ...formData, disponible: e.target.checked })}
+                className="rounded"
+              />
+              <span className="text-sm">Produit disponible</span>
+            </label>
           </div>
 
           <div className="flex justify-end space-x-4">
             <button
               type="button"
-              className="px-4 py-2 border rounded-md"
+              className="px-4 py-2 border rounded-md hover:bg-gray-50"
               onClick={onClose}
             >
               Annuler
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
               Ajouter le produit
             </button>
@@ -227,7 +320,3 @@ const AddProductForm = ({ isOpen, onClose, onSubmit }) => {
     </div>
   );
 };
-
-
-// Rest of the components remain the same
-export { AddProductForm, AddEventForm, AddCategoryForm };
