@@ -35,13 +35,6 @@ const ProductSection = ({ products, searchTerm, setSearchTerm }) => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button 
-          className="flex items-center bg-blue-600 hover:bg-blue-700"
-          onClick={() => setIsAddProductOpen(true)}
-        >
-          <PlusCircle className="w-5 h-5 mr-2" />
-          Ajouter un produit
-        </Button>
       </div>
 
       <Card>

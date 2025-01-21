@@ -3,11 +3,21 @@ import React, { useState, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, ShoppingBag, Menu, X } from 'lucide-react';
 import styles from '../../../styles/Navbar.module.css';
+import xbox from "../public/images/console.jpeg"
+import mac from "../public/images/mac.png"
+import montre from "../public/images/montre.jpeg"
+import airpods from "../public/images/airpods.jpeg"
+
+interface SubCategory {
+  title: string;
+  image: string;
+  link: string;
+}
 
 interface NavItem {
   label: string;
   path: string;
-  options: string[];
+  options: SubCategory[];
   featured?: string[];
 }
 
@@ -15,45 +25,140 @@ const navItems: NavItem[] = [
   { 
     label: 'Boutique', 
     path: '/Products', 
-    options: ['Derniers Arrivages', 'Tendances', 'Collections', 'Marques'],
+    options: [
+      {
+        title: 'Derniers Arrivages',
+        image: xbox.src,
+        link: '/Products'
+      },
+      {
+        title: 'Tendances',
+        image: mac.src,
+        link: '/Products'
+      },
+      {
+        title: 'Collections',
+        image: montre.src,
+        link: '/Products'
+      },
+      {
+        title: 'Marques',
+        image: airpods.src,
+        link: '/Products'
+      }
+    ],
     featured: ['Nike', 'Adidas', 'Zara', 'H&M']
-  },
-  { 
-    label: 'Ordinateur', 
-    path: '/homme', 
-    options: ['Vêtements', 'Chaussures', 'Accessoires', 'Sport', 'Luxe'],
-    featured: ['Meilleures ventes', 'Nouveautés', 'Promos']
-  },
-  { 
-    label: 'Mobile', 
-    path: '/femme', 
-    options: ['Vêtements', 'Chaussures', 'Sacs', 'Bijoux', 'Sport'],
-    featured: ['Tendances', 'Nouveautés', 'Outlet']
   },
   { 
     label: 'Telephones', 
     path: '/tech', 
-    options: ['Smartphones', 'Ordinateurs', 'Gaming', 'Audio', 'Accessoires'],
+    options: [
+      {
+        title: 'Smartphones',
+        image: '/api/placeholder/240/160',
+        link: '/tech/smartphones'
+      },
+      {
+        title: 'Audio',
+        image: '/api/placeholder/240/160',
+        link: '/tech/audio'
+      },
+      {
+        title: 'Accessoires',
+        image: '/api/placeholder/240/160',
+        link: '/tech/accessoires'
+      },
+      {
+        title: 'Gaming',
+        image: '/api/placeholder/240/160',
+        link: '/tech/gaming'
+      }
+    ],
     featured: ['Apple', 'Samsung', 'PlayStation', 'Xbox']
   },
   { 
-    label: 'Accessoires', 
-    path: '/lifestyle', 
-    options: ['Déco', 'Beauté', 'Sport', 'Bien-être', 'Maison'],
-    featured: ['Promos', 'Nouveautés']
+    label: 'Telephones', 
+    path: '/tech', 
+    options: [
+      {
+        title: 'Smartphones',
+        image: '/api/placeholder/240/160',
+        link: '/tech/smartphones'
+      },
+      {
+        title: 'Audio',
+        image: '/api/placeholder/240/160',
+        link: '/tech/audio'
+      },
+      {
+        title: 'Accessoires',
+        image: '/api/placeholder/240/160',
+        link: '/tech/accessoires'
+      },
+      {
+        title: 'Gaming',
+        image: '/api/placeholder/240/160',
+        link: '/tech/gaming'
+      }
+    ],
+    featured: ['Apple', 'Samsung', 'PlayStation', 'Xbox']
   },
   { 
-    label: 'Promos', 
-    path: '/promos', 
-    options: ['Deals du Jour', '-50% et plus', 'Ventes Flash', 'Outlet'],
-    featured: ['Meilleures offres']
+    label: 'Telephones', 
+    path: '/tech', 
+    options: [
+      {
+        title: 'Smartphones',
+        image: '/api/placeholder/240/160',
+        link: '/tech/smartphones'
+      },
+      {
+        title: 'Audio',
+        image: '/api/placeholder/240/160',
+        link: '/tech/audio'
+      },
+      {
+        title: 'Accessoires',
+        image: '/api/placeholder/240/160',
+        link: '/tech/accessoires'
+      },
+      {
+        title: 'Gaming',
+        image: '/api/placeholder/240/160',
+        link: '/tech/gaming'
+      }
+    ],
+    featured: ['Apple', 'Samsung', 'PlayStation', 'Xbox']
   },
   { 
-    label: 'Evenements', 
-    path: '/events', 
-    options: ['Concert', 'Prieres', 'Match'],
-  }
+    label: 'Telephones', 
+    path: '/tech', 
+    options: [
+      {
+        title: 'Smartphones',
+        image: '/api/placeholder/240/160',
+        link: '/tech/smartphones'
+      },
+      {
+        title: 'Audio',
+        image: '/api/placeholder/240/160',
+        link: '/tech/audio'
+      },
+      {
+        title: 'Accessoires',
+        image: '/api/placeholder/240/160',
+        link: '/tech/accessoires'
+      },
+      {
+        title: 'Gaming',
+        image: '/api/placeholder/240/160',
+        link: '/tech/gaming'
+      }
+    ],
+    featured: ['Apple', 'Samsung', 'PlayStation', 'Xbox']
+  },
 ];
+
 
 interface NavbarProps {
   activeDropdown: number | null;
@@ -121,7 +226,6 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
   return (
     <nav className={styles.navbar}>
       <div className={styles.container}>
-        {/* Bouton Menu Hamburger */}
         <button 
           className={`${styles.mobileMenuButton} ${isMobileMenuOpen ? styles.active : ''}`}
           onClick={toggleMobileMenu}
@@ -132,7 +236,6 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
 
         <h3 className={styles.logo}>E-Commerce</h3>
         
-        {/* Menu de navigation principal */}
         <ul className={`${styles.navLinks} ${isMobileMenuOpen ? styles.mobileMenuOpen : ''}`}>
           {navItems.map((item, index) => (
             <li
@@ -149,18 +252,26 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
                 <div className={`${styles.dropdown} ${isMobileMenuOpen ? styles.mobileDropdown : ''} nav-dropdown`}>
                   <div className={styles.dropdownGroup}>
                     <h2>{item.label}</h2>
-                    <ul>
+                    <div className={styles.categoryGrid}>
                       {item.options.map((option, optionIndex) => (
-                        <li key={optionIndex}>
-                          <Link 
-                            href={`${item.path}/${option.toLowerCase().replace(/\s+/g, '-')}`} 
-                            className={styles.dropdownLink}
-                          >
-                            {option}
-                          </Link>
-                        </li>
+                        <Link 
+                          key={optionIndex}
+                          href={option.link}
+                          className={styles.categoryCard}
+                        >
+                          <div className={styles.categoryImage}>
+                            <img
+                              src={option.image}
+                              alt={option.title}
+                              className={styles.categoryImg}
+                            />
+                          </div>
+                          <h3 className={styles.categoryTitle}>
+                            {option.title}
+                          </h3>
+                        </Link>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 </div>
               )}

@@ -45,6 +45,7 @@ interface UseProductsReturn {
   getAllProducts: () => Promise<void>;
   getProductsByCategory: (categoryId: string) => Promise<void>;
   getCategories: () => Promise<void>;
+  updateProduct: (id: string, updatedData: ProductFormData) => Promise<void>;
 }
 
 interface CreateProductResponse {
@@ -163,6 +164,44 @@ const useProducts = (): UseProductsReturn => {
       setLoading(false);
     }
   };
+
+  const updateProduct = async (id: string, updatedData: ProductFormData): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Téléchargement des nouvelles images si elles existent
+      const updatedPhotos = updatedData.photos?.length ? await uploadImages(updatedData.photos) : [];
+  
+      // Réorganiser les données pour l'API
+      const finalUpdatedData = {
+        ...updatedData,
+        prix: Number(updatedData.prix),
+        stock: Number(updatedData.stock),
+        photos: updatedPhotos,
+      };
+  
+      console.log('Données mises à jour:', finalUpdatedData);
+  
+      // Appel à l'API pour mettre à jour le produit
+      await fetchApi<void>(`/products/${id}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(finalUpdatedData),
+      });
+  
+      // Mettre à jour le produit dans l'état local
+      setProducts((prev) =>
+        prev.map((product) =>
+          product.id === id ? { ...product, ...finalUpdatedData } : product
+        )
+      );
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   
   const deleteProduct = async (id: string) => {
     setLoading(true);
@@ -237,6 +276,7 @@ const useProducts = (): UseProductsReturn => {
     createProduct,
     deleteProduct,
     getProduct,
+    updateProduct,
     getAllProducts,
     getProductsByCategory,
     getCategories,
