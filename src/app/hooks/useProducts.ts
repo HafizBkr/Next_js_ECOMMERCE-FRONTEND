@@ -36,270 +36,194 @@ interface ProductFormData {
 
 interface UseProductsReturn {
   products: Product[];
-  categories: Category[]; // Nouvelle propriété pour les catégories
+  categories: Category[];
   loading: boolean;
   error: string | null;
-  createProduct: (productData: ProductFormData) => Promise<void>;
-  updateProduct: (id: string, productData: ProductFormData) => Promise<void>;
+  createProduct: (productData: ProductFormData) => Promise<CreateProductResponse>;
   deleteProduct: (id: string) => Promise<void>;
   getProduct: (id: string) => Promise<Product>;
   getAllProducts: () => Promise<void>;
   getProductsByCategory: (categoryId: string) => Promise<void>;
-  getCategories: () => Promise<void>; // Fonction pour récupérer les catégories
+  getCategories: () => Promise<void>;
 }
+
+interface CreateProductResponse {
+  success: boolean;
+  productId?: string;
+  error?: string;
+}
+
+const API_BASE_URL = 'http://localhost:8080'; // URL de base pour les appels API
+const UPLOAD_API_URL = 'http://localhost:3000/api/upload'; // URL pour l'upload d'images
 
 const useProducts = (): UseProductsReturn => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]); // État pour les catégories
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleApiError = (error: any) => {
+  const handleApiError = (error: unknown) => {
     const errorMessage = error instanceof Error ? error.message : 'Une erreur est survenue';
     setError(errorMessage);
     console.error('Erreur détaillée:', error);
-    throw error;
+    throw new Error(errorMessage);
   };
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('admin_token');
     if (!token) {
-      throw new Error('Token d\'administration manquant');
+      throw new Error("Token d'administration manquant");
     }
     return {
-      'Authorization': `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     };
   };
 
-  // Fonction pour uploader les images et obtenir leurs URLs
-  const uploadImages = async (photos: File[]): Promise<string[]> => {
-    // Remplacez ceci par une logique réelle pour télécharger les images
-    return photos.map((_, index) => `https://example.com/photo${index + 1}.jpg`);
+  const fetchApi = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(
+          `${response.status} ${response.statusText}` +
+            (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : '')
+        );
+      }
+      return await response.json();
+    } catch (error) {
+      handleApiError(error);
+      throw error; // Rejette pour une gestion explicite en dehors
+    }
   };
 
-  // Créer un nouveau produit
-  const createProduct = async (productData: ProductFormData) => {
-    setLoading(true);
-    setError(null);
+  const uploadImages = async (files: File[]): Promise<string[]> => {
+    const formData = new FormData();
+    files.forEach((file) => formData.append('file', file));
   
     try {
-      // Log des données reçues
-      console.log('Données reçues dans createProduct:', productData);
-  
-      // Vérification du token
-      const token = localStorage.getItem('admin_token');
-      if (!token) {
-        throw new Error('Token d\'administration manquant');
+      const response = await fetch(UPLOAD_API_URL, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error(`Upload échoué: ${response.statusText}`);
       }
+      const data: { urls: string[] } = await response.json();
+      console.log('URLs des fichiers téléchargés:', data.urls);  // Log pour vérifier les URLs
+      return data.urls;
+    } catch (error) {
+      handleApiError(error);
+      return [];
+    }
+  };
   
-      // Préparation des données à envoyer
-      const dataToSend = {
+  
+  
+  const createProduct = async (productData: ProductFormData): Promise<CreateProductResponse> => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Téléchargement des images si elles existent
+      const photoUrls = productData.photos?.length ? await uploadImages(productData.photos) : [];
+  
+      // Réorganiser les données dans l'ordre souhaité
+      const finalProductData = {
         nom: productData.nom,
         prix: Number(productData.prix),
         stock: Number(productData.stock),
         etat: productData.etat,
-        photos: [], // On gèrera l'upload des photos séparément
+        photos: photoUrls, // Les photos téléchargées
         categorie_id: productData.categorie_id,
         localisation: productData.localisation,
         description: productData.description,
         marque: productData.marque,
         modele: productData.modele,
-        disponible: productData.disponible
+        disponible: productData.disponible,
       };
   
-      // Log des données formatées
-      console.log('Données formatées pour l\'envoi:', dataToSend);
+      // Log pour déboguer l'objet final avant l'envoi
+      console.log('Data envoyée pour création de produit:', finalProductData);
   
-      const response = await fetch('http://localhost:8080/products', {
+      // Appel à l'API pour créer un produit
+      const newProduct = await fetchApi<Product>('/products', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToSend)
-      });
-  
-      // Log de la réponse complète
-      console.log('Status:', response.status);
-      console.log('Headers:', Object.fromEntries(response.headers.entries()));
-  
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        console.log('Données d\'erreur:', errorData);
-        throw new Error(
-          `Erreur lors de la création du produit: ${response.status} ${response.statusText}` +
-          (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : '')
-        );
-      }
-  
-      await getAllProducts();
-    } catch (err) {
-      console.error('Erreur complète:', err);
-      handleApiError(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Mettre à jour un produit existant
-  const updateProduct = async (id: string, productData: ProductFormData) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const photoUrls = await uploadImages(productData.photos);
-
-      const response = await fetch(`http://localhost:8080/products/${id}`, {
-        method: 'PUT',
         headers: getAuthHeaders(),
-        body: JSON.stringify({
-          ...productData,
-          prix: Number(productData.prix),
-          stock: Number(productData.stock),
-          photos: photoUrls,
-        }),
+        body: JSON.stringify(finalProductData),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(
-          `Erreur lors de la mise à jour du produit: ${response.status} ${response.statusText}` +
-          (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : '')
-        );
-      }
-
-      await getAllProducts();
-    } catch (err) {
-      handleApiError(err);
+  
+      // Ajouter le nouveau produit à la liste
+      setProducts((prev) => [...prev, newProduct]);
+  
+      return { success: true, productId: newProduct.id };
+    } catch (error) {
+      console.error("Erreur de création:", error);
+      return { success: false, error: error instanceof Error ? error.message : 'Une erreur est survenue' };
     } finally {
       setLoading(false);
     }
   };
-
-  // Supprimer un produit
+  
   const deleteProduct = async (id: string) => {
     setLoading(true);
     setError(null);
-
     try {
-      const response = await fetch(`http://localhost:8080/products/${id}`, {
+      await fetchApi(`/products/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders(),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(
-          `Erreur lors de la suppression du produit: ${response.status} ${response.statusText}` +
-          (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : '')
-        );
-      }
-
-      await getAllProducts();
-    } catch (err) {
-      handleApiError(err);
+      setProducts((prev) => prev.filter((product) => product.id !== id));
+    } catch (error) {
+      handleApiError(error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Récupérer un produit spécifique
   const getProduct = async (id: string): Promise<Product> => {
     setLoading(true);
     setError(null);
-
     try {
-      const response = await fetch(`http://localhost:8080/products/${id}`);
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(
-          `Erreur lors de la récupération du produit: ${response.status} ${response.statusText}` +
-          (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : '')
-        );
-      }
-
-      const product = await response.json();
-      return product;
-    } catch (err) {
-      handleApiError(err);
-      throw err;
+      return await fetchApi<Product>(`/products/${id}`);
     } finally {
       setLoading(false);
     }
   };
 
-  // Récupérer tous les produits
   const getAllProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
-
     try {
-      const response = await fetch('http://localhost:8080/products');
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(
-          `Erreur lors de la récupération des produits: ${response.status} ${response.statusText}` +
-          (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : '')
-        );
-      }
-
-      const data = await response.json();
+      const data = await fetchApi<Product[]>('/products');
       setProducts(data);
-    } catch (err) {
-      handleApiError(err);
+    } catch (error) {
+      handleApiError(error);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Récupérer les produits par catégorie
   const getProductsByCategory = async (categoryId: string) => {
     setLoading(true);
     setError(null);
-
     try {
-      const response = await fetch(`http://localhost:8080/products/by-category/${categoryId}`);
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(
-          `Erreur lors de la récupération des produits par catégorie: ${response.status} ${response.statusText}` +
-          (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : '')
-        );
-      }
-
-      const data = await response.json();
+      const data = await fetchApi<Product[]>(`/products/by-category/${categoryId}`);
       setProducts(data);
-    } catch (err) {
-      handleApiError(err);
+    } catch (error) {
+      handleApiError(error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Récupérer toutes les catégories
   const getCategories = async () => {
     setLoading(true);
     setError(null);
-
     try {
-      const response = await fetch('http://localhost:8080/categories');
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(
-          `Erreur lors de la récupération des catégories: ${response.status} ${response.statusText}` +
-          (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : '')
-        );
-      }
-
-      const data = await response.json();
+      const data = await fetchApi<Category[]>('/categories');
       setCategories(data);
-    } catch (err) {
-      handleApiError(err);
+    } catch (error) {
+      handleApiError(error);
     } finally {
       setLoading(false);
     }
@@ -307,16 +231,15 @@ const useProducts = (): UseProductsReturn => {
 
   return {
     products,
-    categories, // Retourner les catégories
+    categories,
     loading,
     error,
     createProduct,
-    updateProduct,
     deleteProduct,
     getProduct,
     getAllProducts,
     getProductsByCategory,
-    getCategories, // Ajouter la fonction getCategories
+    getCategories,
   };
 };
 
