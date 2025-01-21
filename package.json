@@ -19,7 +19,9 @@
     "@react-google-maps/api": "^2.20.5",
     "@tabler/icons-react": "^3.26.0",
     "@types/mapbox-gl": "^3.4.1",
+    "@vercel/blob": "^0.27.1",
     "clsx": "^2.1.1",
+    "formidable": "^3.5.2",
     "framer-motion": "^11.15.0",
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
@@ -31,10 +33,12 @@
     "react-leaflet": "^5.0.0",
     "shadcn-ui": "^0.9.4",
     "styled-components": "^6.1.13",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "uuid": "^11.0.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/formidable": "^3.4.5",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
