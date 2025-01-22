@@ -1,27 +1,18 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { Heart } from 'lucide-react';
 import iphone from "@/app/public/images/iphonee.png";
-import useProductByID from '../../hooks/useProductByid'; // Importez votre hook
+import useProductByID from '../../hooks/useProductByid';
 
 const ProductDetail = ({ productId }: { productId: string }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  // Utilisation du hook pour récupérer les données du produit
   const { product, loading, error } = useProductByID(productId);
 
-  // Si les données sont en cours de chargement ou une erreur s'est produite
-  if (loading) {
-    return <div>Chargement...</div>;
-  }
+  if (loading) return <div>Chargement...</div>;
+  if (error) return <div>Erreur: {error}</div>;
 
-  if (error) {
-    return <div>Erreur: {error}</div>;
-  }
-
-  // Définir des images par défaut si le produit n'a pas de photos
-  const thumbnails = product?.photos.length ? product.photos : [iphone.src, iphone.src, iphone.src, iphone.src, iphone.src];
+  const thumbnails = product?.photos?.length ? product.photos : [iphone.src, iphone.src, iphone.src, iphone.src, iphone.src];
 
   return (
     <div className="max-w-7xl mx-auto p-4">
@@ -36,44 +27,47 @@ const ProductDetail = ({ productId }: { productId: string }) => {
       </nav>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Left Column */}
-        <div className="space-y-4">
-          <div className="relative aspect-square bg-gray-100 rounded-lg">
-            <div className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded">
-              SUIVI PAR 3 PERSONNES EN 24 HEURES
-            </div>
-            <Image
-              src={thumbnails[currentImageIndex]}
-              alt={product?.nom || "Produit"}
-              className="object-contain"
-              fill
-            />
-          </div>
-          
-          <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-5 gap-4">
+          {/* Thumbnails column */}
+          <div className="col-span-1 flex flex-col gap-2">
             {thumbnails.map((thumb, idx) => (
               <button
                 key={idx}
-                className={`aspect-square relative border rounded-lg ${
-                  currentImageIndex === idx ? 'border-blue-500' : 'border-gray-200'
-                }`}
                 onClick={() => setCurrentImageIndex(idx)}
+                className={`relative aspect-square border-2 rounded-lg overflow-hidden
+                  ${currentImageIndex === idx ? 'border-blue-500' : 'border-gray-200'}`}
               >
                 <Image
                   src={thumb}
                   alt={`Thumbnail ${idx + 1}`}
-                  className="object-cover rounded-lg"
-                  fill
+                  width={100}
+                  height={100}
+                  className="object-cover"
                 />
               </button>
             ))}
           </div>
+
+          {/* Main image */}
+          <div className="col-span-4 relative aspect-square  rounded-lg">
+            <div className="absolute top-2 left-2 z-10 bg-red-600 text-white text-xs px-2 py-1 rounded">
+              SUIVI PAR 3 PERSONNES EN 24 HEURES
+            </div>
+            <Image
+              src={thumbnails[currentImageIndex]}
+              alt={`Vue ${currentImageIndex + 1}`}
+              width={500}
+              height={0}
+             
+              className="object-contain"
+              priority
+            />
+          </div>
         </div>
 
-        {/* Right Column */}
         <div className="space-y-4">
           <div className="flex justify-between items-start">
-            <h1 className="text-xl font-medium">{product?.nom}</h1>
+          <h1 className="text-4xl font-bold">{product?.nom}</h1>
             <div className="flex items-center gap-2">
               <button className="p-2">
                 <svg viewBox="0 0 24 24" width="24" height="24">
@@ -88,13 +82,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
           </div>
 
           <div className="flex items-center gap-2">
-            <Image
-              src="/store-icon.jpg"
-              alt="Store Icon"
-              width={24}
-              height={24}
-              className="rounded-full"
-            />
+          
             <span className="font-medium hover:underline cursor-pointer">{product?.marque}</span>
             <span className="text-gray-600">(2816)</span>
             <span className="text-blue-600 hover:underline cursor-pointer">Pro</span>
@@ -146,8 +134,8 @@ const ProductDetail = ({ productId }: { productId: string }) => {
           <div className="space-y-4 border-t pt-4">
             <div>
               <div className="font-medium mb-2">Livraison :</div>
-              <p>La livraison n'est peut-être pas offerte vers : Togo. Consultez la description de l'objet ou contactez le vendeur pour en savoir plus sur les options de livraison.</p>
-              <button className="text-blue-600 hover:underline">Afficher les détails</button>
+              <p className="text-sm">La livraison n'est peut-être pas offerte vers : Togo. Consultez la description de l'objet ou contactez le vendeur pour en savoir plus sur les options de livraison.</p>
+              <button className="text-blue-600 hover:underline text-sm">Afficher les détails</button>
             </div>
 
             <div>
