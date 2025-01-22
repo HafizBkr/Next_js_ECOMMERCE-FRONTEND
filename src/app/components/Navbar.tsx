@@ -7,6 +7,7 @@ import xbox from "../public/images/console.jpeg"
 import mac from "../public/images/mac.png"
 import montre from "../public/images/montre.jpeg"
 import airpods from "../public/images/airpods.jpeg"
+import event from "../public/images/event.jpg"
 
 interface SubCategory {
   title: string;
@@ -131,31 +132,15 @@ const navItems: NavItem[] = [
     featured: ['Apple', 'Samsung', 'PlayStation', 'Xbox']
   },
   { 
-    label: 'Telephones', 
-    path: '/tech', 
+    label: 'Evenemets', 
+    path: '/events', 
     options: [
       {
-        title: 'Smartphones',
-        image: '/api/placeholder/240/160',
-        link: '/tech/smartphones'
+        title: 'We Love Eya',
+        image: event.src,
+        link: '/events'
       },
-      {
-        title: 'Audio',
-        image: '/api/placeholder/240/160',
-        link: '/tech/audio'
-      },
-      {
-        title: 'Accessoires',
-        image: '/api/placeholder/240/160',
-        link: '/tech/accessoires'
-      },
-      {
-        title: 'Gaming',
-        image: '/api/placeholder/240/160',
-        link: '/tech/gaming'
-      }
     ],
-    featured: ['Apple', 'Samsung', 'PlayStation', 'Xbox']
   },
 ];
 
