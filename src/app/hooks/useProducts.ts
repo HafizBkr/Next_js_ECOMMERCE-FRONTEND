@@ -57,7 +57,7 @@ interface CreateProductResponse {
 const API_BASE_URL = 'http://localhost:8080'; // URL de base pour les appels API
 const UPLOAD_API_URL = 'http://localhost:3000/api/upload'; // URL pour l'upload d'images
 
-const useProducts = (): UseProductsReturn => {
+const useProducts = (productId: string): UseProductsReturn => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -118,7 +118,6 @@ const useProducts = (): UseProductsReturn => {
       return [];
     }
   };
-  
   
   
   const createProduct = async (productData: ProductFormData): Promise<CreateProductResponse> => {
@@ -201,7 +200,6 @@ const useProducts = (): UseProductsReturn => {
       setLoading(false);
     }
   };
-  
   
   const deleteProduct = async (id: string) => {
     setLoading(true);

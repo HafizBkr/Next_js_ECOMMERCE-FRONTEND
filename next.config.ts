@@ -4,8 +4,8 @@ module.exports = {
     domains: [
       'images.unsplash.com',
       'assets.aceternity.com',
-      './public'
-    
+      './public',
+      'ufho6b3qk4qn4fuj.public.blob.vercel-storage.com' // Ajout du domaine Vercel
     ],
   },
 }
