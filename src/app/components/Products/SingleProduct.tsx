@@ -1,19 +1,27 @@
-"use client"
-import { useState } from 'react';
+"use client";
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Heart } from 'lucide-react';
-import iphone from "@/app/public/images/iphonee.png"
+import iphone from "@/app/public/images/iphonee.png";
+import useProductByID from '../../hooks/useProductByid'; // Importez votre hook
 
-const ProductDetail = () => {
+const ProductDetail = ({ productId }: { productId: string }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  
-  const thumbnails = [
-    iphone.src,
-    iphone.src,
-    iphone.src,
-    iphone.src,
-    iphone.src
-  ];
+
+  // Utilisation du hook pour récupérer les données du produit
+  const { product, loading, error } = useProductByID(productId);
+
+  // Si les données sont en cours de chargement ou une erreur s'est produite
+  if (loading) {
+    return <div>Chargement...</div>;
+  }
+
+  if (error) {
+    return <div>Erreur: {error}</div>;
+  }
+
+  // Définir des images par défaut si le produit n'a pas de photos
+  const thumbnails = product?.photos.length ? product.photos : [iphone.src, iphone.src, iphone.src, iphone.src, iphone.src];
 
   return (
     <div className="max-w-7xl mx-auto p-4">
@@ -36,7 +44,7 @@ const ProductDetail = () => {
             </div>
             <Image
               src={thumbnails[currentImageIndex]}
-              alt="iPhone 15 Plus"
+              alt={product?.nom || "Produit"}
               className="object-contain"
               fill
             />
@@ -65,9 +73,7 @@ const ProductDetail = () => {
         {/* Right Column */}
         <div className="space-y-4">
           <div className="flex justify-between items-start">
-            <h1 className="text-xl font-medium">
-              APPLE iPhone 15 Plus 128 Go Noir - Avec Batterie neuve - Très bon état
-            </h1>
+            <h1 className="text-xl font-medium">{product?.nom}</h1>
             <div className="flex items-center gap-2">
               <button className="p-2">
                 <svg viewBox="0 0 24 24" width="24" height="24">
@@ -75,7 +81,7 @@ const ProductDetail = () => {
                 </svg>
               </button>
               <div className="flex items-center gap-1">
-                <span>34</span>
+                <span>{product?.nombre_vues}</span>
                 <Heart className="w-5 h-5" />
               </div>
             </div>
@@ -89,26 +95,20 @@ const ProductDetail = () => {
               height={24}
               className="rounded-full"
             />
-            <span className="font-medium hover:underline cursor-pointer">Alloccaz Store</span>
+            <span className="font-medium hover:underline cursor-pointer">{product?.marque}</span>
             <span className="text-gray-600">(2816)</span>
             <span className="text-blue-600 hover:underline cursor-pointer">Pro</span>
           </div>
 
-          <div className="flex gap-4">
-            <span className="hover:underline cursor-pointer text-blue-600">97,7% d'évaluations positives</span>
-            <span className="hover:underline cursor-pointer text-blue-600">Autres objets du vendeur</span>
-            <span className="hover:underline cursor-pointer text-blue-600">Contacter le vendeur</span>
-          </div>
-
-          <div className="text-2xl font-semibold">779,00 EUR</div>
+          <div className="text-2xl font-semibold">{product?.prix} EUR</div>
 
           <div>
             <div className="flex items-center gap-2">
               <span>État : </span>
-              <span className="font-medium">Très bon état - Reconditionné</span>
+              <span className="font-medium">{product?.etat}</span>
               <button className="text-gray-600">ⓘ</button>
             </div>
-            <p>⚡Ce mobile bénéficie d'une Batterie neuve compatible⚡</p>
+            <p>{product?.description}</p>
           </div>
 
           <div className="flex items-center gap-4">
@@ -119,7 +119,7 @@ const ProductDetail = () => {
               min={1}
               className="border rounded w-16 px-2 py-1"
             />
-            <span className="text-gray-600">10 disponibles</span>
+            <span className="text-gray-600">{product?.stock} disponibles</span>
           </div>
 
           <div className="space-y-3">
@@ -151,7 +151,7 @@ const ProductDetail = () => {
             </div>
 
             <div>
-              <div>Lieu où se trouve l'objet : <span className="font-medium">Lieusaint, France</span></div>
+              <div>Lieu où se trouve l'objet : <span className="font-medium">{product?.localisation}</span></div>
             </div>
 
             <div>
