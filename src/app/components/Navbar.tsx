@@ -3,11 +3,12 @@ import React, { useState, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, ShoppingBag, Menu, X } from 'lucide-react';
 import styles from '../../../styles/Navbar.module.css';
-import xbox from "../public/images/console.jpeg"
-import mac from "../public/images/mac.png"
-import montre from "../public/images/montre.jpeg"
-import airpods from "../public/images/airpods.jpeg"
-import event from "../public/images/event.jpg"
+import useCategories from '../hooks/useCategories';
+import xbox from "../public/images/console.jpeg";
+import mac from "../public/images/mac.png";
+import montre from "../public/images/montre.jpeg";
+import airpods from "../public/images/airpods.jpeg";
+import event from "../public/images/event.jpg";
 
 interface SubCategory {
   title: string;
@@ -22,129 +23,6 @@ interface NavItem {
   featured?: string[];
 }
 
-const navItems: NavItem[] = [
-  { 
-    label: 'Boutique', 
-    path: '/Products', 
-    options: [
-      {
-        title: 'Derniers Arrivages',
-        image: xbox.src,
-        link: '/Products'
-      },
-      {
-        title: 'Tendances',
-        image: mac.src,
-        link: '/Products'
-      },
-      {
-        title: 'Collections',
-        image: montre.src,
-        link: '/Products'
-      },
-      {
-        title: 'Marques',
-        image: airpods.src,
-        link: '/Products'
-      }
-    ],
-    featured: ['Nike', 'Adidas', 'Zara', 'H&M']
-  },
-  { 
-    label: 'Telephones', 
-    path: '/tech', 
-    options: [
-      {
-        title: 'Smartphones',
-        image: '/api/placeholder/240/160',
-        link: '/tech/smartphones'
-      },
-      {
-        title: 'Audio',
-        image: '/api/placeholder/240/160',
-        link: '/tech/audio'
-      },
-      {
-        title: 'Accessoires',
-        image: '/api/placeholder/240/160',
-        link: '/tech/accessoires'
-      },
-      {
-        title: 'Gaming',
-        image: '/api/placeholder/240/160',
-        link: '/tech/gaming'
-      }
-    ],
-    featured: ['Apple', 'Samsung', 'PlayStation', 'Xbox']
-  },
-  { 
-    label: 'Telephones', 
-    path: '/tech', 
-    options: [
-      {
-        title: 'Smartphones',
-        image: '/api/placeholder/240/160',
-        link: '/tech/smartphones'
-      },
-      {
-        title: 'Audio',
-        image: '/api/placeholder/240/160',
-        link: '/tech/audio'
-      },
-      {
-        title: 'Accessoires',
-        image: '/api/placeholder/240/160',
-        link: '/tech/accessoires'
-      },
-      {
-        title: 'Gaming',
-        image: '/api/placeholder/240/160',
-        link: '/tech/gaming'
-      }
-    ],
-    featured: ['Apple', 'Samsung', 'PlayStation', 'Xbox']
-  },
-  { 
-    label: 'Telephones', 
-    path: '/tech', 
-    options: [
-      {
-        title: 'Smartphones',
-        image: '/api/placeholder/240/160',
-        link: '/tech/smartphones'
-      },
-      {
-        title: 'Audio',
-        image: '/api/placeholder/240/160',
-        link: '/tech/audio'
-      },
-      {
-        title: 'Accessoires',
-        image: '/api/placeholder/240/160',
-        link: '/tech/accessoires'
-      },
-      {
-        title: 'Gaming',
-        image: '/api/placeholder/240/160',
-        link: '/tech/gaming'
-      }
-    ],
-    featured: ['Apple', 'Samsung', 'PlayStation', 'Xbox']
-  },
-  { 
-    label: 'Evenemets', 
-    path: '/events', 
-    options: [
-      {
-        title: 'We Love Eya',
-        image: event.src,
-        link: '/events'
-      },
-    ],
-  },
-];
-
-
 interface NavbarProps {
   activeDropdown: number | null;
   onDropdownChange: (dropdown: number | null) => void;
@@ -155,16 +33,46 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (!target.closest('.nav-item') && !target.closest('.nav-dropdown')) {
-        onDropdownChange(null);
-        setIsSearchOpen(false);
-        setIsCartOpen(false);
-      }
-    };
+  const staticNavItems: NavItem[] = [
+    { 
+      label: 'Boutique', 
+      path: '/Products', 
+      options: [
+        { title: 'Derniers Arrivages', image: xbox.src, link: '/Products' },
+        { title: 'Tendances', image: mac.src, link: '/Products' },
+        { title: 'Collections', image: montre.src, link: '/Products' },
+        { title: 'Marques', image: airpods.src, link: '/Products' }
+      ],
+      featured: ['Nike', 'Adidas', 'Zara', 'H&M']
+    },
+    { 
+      label: 'Evenements', 
+      path: '/events', 
+      options: [
+        { title: 'We Love Eya', image: event.src, link: '/events' },
+      ],
+    },
+  ];
 
+  const { categories } = useCategories();  // Assuming `useCategories` provides categories
+  const dynamicCategoryNavItems: NavItem[] = categories.map(category => ({
+    label: category.nom,
+    path: `/categories/${category.id}`,
+    options: [{ title: category.nom, image: '/api/placeholder/240/160', link: `/categories/${category.id}` }],
+  }));
+
+  const navItems = [...staticNavItems, ...dynamicCategoryNavItems];
+
+  const handleClickOutside = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.nav-item') && !target.closest('.nav-dropdown')) {
+      onDropdownChange(null);
+      setIsSearchOpen(false);
+      setIsCartOpen(false);
+    }
+  };
+
+  useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onDropdownChange]);
@@ -203,10 +111,6 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
     setIsCartOpen(false);
     onDropdownChange(null);
   }, [isMobileMenuOpen, onDropdownChange]);
-
-  const handleIconDropdown = useCallback((dropdownIndex: number) => {
-    onDropdownChange(activeDropdown === dropdownIndex ? null : dropdownIndex);
-  }, [activeDropdown, onDropdownChange]);
 
   return (
     <nav className={styles.navbar}>
@@ -257,19 +161,33 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
                         </Link>
                       ))}
                     </div>
+                    {item.featured && (
+                      <div className={styles.featuredBrands}>
+                        <h3>Marques populaires</h3>
+                        <ul>
+                          {item.featured.map((brand, brandIndex) => (
+                            <li key={brandIndex}>
+                              <Link href="#" className={styles.dropdownLink}>
+                                {brand}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
             </li>
           ))}
         </ul>
-        
+
         <div className={styles.iconContainer}>
           {/* Icône Rechercher */}
           <div className={`${styles.navItem} nav-item`}>
             <button 
               className={`${styles.iconButton} ${activeDropdown === 0 ? styles.active : ''}`} 
-              onClick={() => handleIconDropdown(0)}
+              onClick={() => handleDropdown(0)}
               aria-label="Rechercher"
             >
               <Search className={styles.icon} />
@@ -308,7 +226,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
           <div className={`${styles.navItem} nav-item`}>
             <button 
               className={`${styles.iconButton} ${activeDropdown === 1 ? styles.active : ''}`}
-              onClick={() => handleIconDropdown(1)}
+              onClick={() => handleDropdown(1)}
               aria-label="Panier"
             >
               <ShoppingBag className={styles.icon} />
@@ -339,7 +257,6 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
         </div>
       </div>
 
-      {/* Appliquer le blur uniquement lors de l'ouverture du dropdown */}
       <div className={`${styles.overlay} ${activeDropdown !== null ? styles.active : ''}`}></div>
     </nav>
   );
