@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Search, ShoppingBag, Menu, X } from 'lucide-react';
 import styles from '../../../styles/Navbar.module.css';
 import useCategories from '../hooks/useCategories';
+import useProductSearch from '../hooks/useSearch';
 import xbox from "../public/images/console.jpeg";
 import mac from "../public/images/mac.png";
 import montre from "../public/images/montre.jpeg";
@@ -32,6 +33,11 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState<NodeJS.Timeout | null>(null);
+
+  const { searchResults, loading, error, searchProducts } = useProductSearch();
+  const { categories } = useCategories();
 
   const staticNavItems: NavItem[] = [
     { 
@@ -54,7 +60,6 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
     },
   ];
 
-  const { categories } = useCategories();  // Assuming `useCategories` provides categories
   const dynamicCategoryNavItems: NavItem[] = categories.map(category => ({
     label: category.nom,
     path: `/categories/${category.id}`,
@@ -84,6 +89,32 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
       document.body.style.overflow = 'unset';
     }
   }, [isMobileMenuOpen]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    
+    // Clear previous timeout
+    if (debouncedSearch) {
+      clearTimeout(debouncedSearch);
+    }
+
+    // Set new timeout
+    const timerId = setTimeout(() => {
+      searchProducts(query);
+    }, 300);
+
+    setDebouncedSearch(timerId);
+  };
+
+  useEffect(() => {
+    // Clean up timeout on component unmount
+    return () => {
+      if (debouncedSearch) {
+        clearTimeout(debouncedSearch);
+      }
+    };
+  }, [debouncedSearch]);
 
   const handleDropdown = useCallback((index: number) => {
     onDropdownChange(activeDropdown === index ? null : index);
@@ -200,10 +231,41 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
                       <Search className={styles.searchIcon} />
                       <input
                         type="text"
-                        placeholder="Rechercher sur apple.com"
+                        placeholder="Rechercher des produits..."
                         className={styles.searchInput}
+                        value={searchQuery}
+                        onChange={handleSearchChange}
                       />
                     </div>
+                    {searchQuery && (
+                      <div className={styles.searchResultsDropdown}>
+                        {loading ? (
+                          <div className={styles.searchLoadingIndicator}>Chargement...</div>
+                        ) : error ? (
+                          <div className={styles.searchErrorIndicator}>{error}</div>
+                        ) : searchResults.length === 0 ? (
+                          <div className={styles.searchNoResults}>Aucun résultat</div>
+                        ) : (
+                          searchResults.map(product => (
+                            <Link 
+                              key={product.id} 
+                              href={`/SingleProductPage/${product.id}`} 
+                              className={styles.searchResultItem}
+                            >
+                              <img 
+                                src={product.photos?.[0]} 
+                                alt={product.nom} 
+                                className={styles.searchResultImage} 
+                              />
+                              <div className={styles.searchResultDetails}>
+                                <h4>{product.nom}</h4>
+                                <p>{product.prix}€</p>
+                              </div>
+                            </Link>
+                          ))
+                        )}
+                      </div>
+                    )}
                     <div className={styles.quickLinksSection}>
                       <h3>Liens rapides</h3>
                       <ul>
