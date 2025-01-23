@@ -4,7 +4,7 @@ import router from 'next/router';
 interface UserProfile {
   email: string;
   first_name: string;
-  last_name:string;
+  last_name: string;
   google_id: string;
   is_new_user: boolean;
   jwt_token: string;
@@ -42,18 +42,20 @@ export const useAuth = () => {
   });
 
   useEffect(() => {
-    // Check URL for JWT token
+    // Vérifier l'URL pour le jwt_token et l'id_token
     const urlParams = new URLSearchParams(window.location.search);
     const jwtTokenFromUrl = urlParams.get('jwt_token');
+    const idTokenFromUrl = urlParams.get('id_token');  // Récupérer id_token de l'URL
 
-    if (jwtTokenFromUrl) {
+    if (jwtTokenFromUrl && idTokenFromUrl) {
       localStorage.setItem('jwt_token', jwtTokenFromUrl);
-      window.history.replaceState({}, document.title, window.location.pathname);
+      localStorage.setItem('id_token', idTokenFromUrl); // Enregistrer id_token dans localStorage
+      window.history.replaceState({}, document.title, window.location.pathname);  // Nettoyer l'URL
       handleAuthCallback();
       return;
     }
 
-    // Check localStorage for existing token and user
+    // Vérifier dans localStorage si un utilisateur et un token existent
     const storedUserString = localStorage.getItem('user_profile');
     const token = localStorage.getItem('jwt_token');
     
@@ -83,7 +85,7 @@ export const useAuth = () => {
       if (!idToken) {
         throw new Error('No ID token found');
       }
-
+  
       const response = await fetch('http://localhost:8080/complete-profile', {
         method: 'POST',
         headers: {
@@ -92,11 +94,13 @@ export const useAuth = () => {
         },
         body: JSON.stringify(profileData)
       });
-
+  
       if (!response.ok) {
         throw new Error('Profile completion failed');
       }
-
+  
+      // Rediriger après avoir complété le profil
+      router.push('/profile');
       return await response.json();
     } catch (err) {
       setState(prev => ({
