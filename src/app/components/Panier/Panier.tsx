@@ -1,63 +1,65 @@
-
 "use client"
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Minus, Plus, X, ArrowLeft, ShoppingBag, Shield, CreditCard } from 'lucide-react';
-import Iphone from "@/app/public/images/iphonee.png"
+import { usePanier } from '../../hooks/usePanier'; // Adjust import path as needed
+
+// Define types to match the hook's data structure
+interface Produit {
+  ID: string;
+  Nom: string;
+  Prix: number;
+  Marque: string;
+  Photo: string;
+  quantity:number;
+}
 
 const CartPage = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "APPLE iPhone 15 Plus 128 Go Noir",
-      condition: "Très bon état - Reconditionné",
-      price: 779.00,
-      quantity: 1,
-      image: Iphone.src,
-      seller: "Alloccaz Store"
-    },
-    {
-        id: 2,
-        name: "APPLE iPhone 15 Plus 128 Go Noir",
-        condition: "Très bon état - Reconditionné",
-        price: 779.00,
-        quantity: 1,
-        image: Iphone.src,
-        seller: "Alloccaz Store"
-      },
-      {
-        id: 3,
-        name: "APPLE iPhone 15 Plus 128 Go Noir",
-        condition: "Très bon état - Reconditionné",
-        price: 779.00,
-        quantity: 1,
-        image: Iphone.src,
-        seller: "Alloccaz Store"
-      },
-  ]);
+  const { 
+    panier, 
+    loading, 
+    error, 
+    supprimerProduit 
+  } = usePanier();
 
-  const updateQuantity = (id: number, change: number) => {
+  const [cartItems, setCartItems] = useState<Produit[]>([]);
+
+  // Sync local state with panier data
+  useEffect(() => {
+    if (panier?.data) {
+      setCartItems(panier.data);
+    }
+  }, [panier]);
+
+  // Quantity update logic (client-side only)
+  const updateQuantity = (id: string, change: number) => {
     setCartItems(items =>
       items.map(item =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + change) }
+        item.ID === id
+          ? { ...item, quantity: Math.max(1, (item.quantity || 1) + change) }
           : item
       )
     );
   };
 
-  const removeItem = (id: number) => {
-    setCartItems(items => items.filter(item => item.id !== id));
+  // Remove item using the hook's method
+  const removeItem = (id: string) => {
+    supprimerProduit(id);
   };
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  // Calculate totals
+  const subtotal = cartItems.reduce((sum, item) => sum + item.Prix * (item.quantity || 1), 0);
   const shipping = 0;
   const total = subtotal + shipping;
+
+  // Loading and error handling
+  if (loading) return <div>Chargement du panier...</div>;
+  if (error) return <div>Erreur: {error}</div>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        {/* Header avec animation */}
+        {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -80,7 +82,7 @@ const CartPage = () => {
           <div className="lg:col-span-2 space-y-6">
             {cartItems.map((item, index) => (
               <motion.div
-                key={item.id}
+                key={item.ID}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -89,24 +91,23 @@ const CartPage = () => {
                 <div className="flex gap-6">
                   <div className="relative w-32 h-32 flex-shrink-0 overflow-hidden rounded-xl">
                     <img
-                      src={item.image}
-                      alt={item.name}
+                      src={item.Photo}
+                      alt={item.Nom}
                       className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <div className="flex-grow">
                     <div className="flex justify-between">
                       <div className="space-y-1">
-                        <h3 className="text-lg font-semibold">{item.name}</h3>
+                        <h3 className="text-lg font-semibold">{item.Nom}</h3>
                         <div className="flex items-center gap-2">
                           <span className="px-2 py-1 bg-blue-50 text-blue-700 text-sm rounded-full">
-                            {item.condition}
+                            {item.Marque}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-600">Vendeur: {item.seller}</p>
                       </div>
                       <button
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeItem(item.ID)}
                         className="text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-red-50 rounded-full"
                       >
                         <X className="w-5 h-5" />
@@ -115,20 +116,20 @@ const CartPage = () => {
                     <div className="flex justify-between items-end mt-6">
                       <div className="flex items-center bg-gray-50 rounded-full p-1">
                         <button
-                          onClick={() => updateQuantity(item.id, -1)}
+                          onClick={() => updateQuantity(item.ID, -1)}
                           className="p-2 rounded-full hover:bg-white hover:shadow-md transition-all"
                         >
                           <Minus className="w-4 h-4" />
                         </button>
-                        <span className="w-12 text-center font-medium">{item.quantity}</span>
+                        <span className="w-12 text-center font-medium">{item.quantity || 1}</span>
                         <button
-                          onClick={() => updateQuantity(item.id, 1)}
+                          onClick={() => updateQuantity(item.ID, 1)}
                           className="p-2 rounded-full hover:bg-white hover:shadow-md transition-all"
                         >
                           <Plus className="w-4 h-4" />
                         </button>
                       </div>
-                      <p className="text-xl font-semibold">{(item.price * item.quantity).toFixed(2)} €</p>
+                      <p className="text-xl font-semibold">{((item.Prix * (item.quantity || 1)).toFixed(2))} €</p>
                     </div>
                   </div>
                 </div>
@@ -136,7 +137,7 @@ const CartPage = () => {
             ))}
           </div>
 
-          {/* Récapitulatif */}
+          {/* Récapitulatif (reste identique) */}
           <div className="lg:col-span-1 space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -168,8 +169,8 @@ const CartPage = () => {
               </div>
             </motion.div>
 
-            {/* Options de paiement */}
-            <motion.div
+              {/* Options de paiement */}
+              <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}

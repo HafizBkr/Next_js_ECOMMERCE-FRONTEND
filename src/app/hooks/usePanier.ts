@@ -9,7 +9,8 @@ interface Produit {
 }
 
 interface Panier {
-  produits: Produit[];
+  data: Produit[]; 
+  status?: string;
 }
 
 // Définir le hook usePanier
