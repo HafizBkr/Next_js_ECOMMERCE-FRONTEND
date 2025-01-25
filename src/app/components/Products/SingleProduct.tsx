@@ -147,7 +147,7 @@ const ProductDetail = () => {
             >
               {cartLoading ? 'Ajout en cours...' : 'Ajouter au panier'}
             </button>
-            {cartError && <p className="text-red-500">{cartError}</p>}
+            {/* {cartError && <p className="text-red-500">{cartError}</p>} */}
             <button className="w-full border rounded-full py-3 font-medium flex items-center justify-center gap-2">
               <Heart className="w-5 h-5" />
               Suivre cet objet

@@ -47,8 +47,14 @@ export const useAuth = () => {
     const jwtTokenFromUrl = urlParams.get('jwt_token');
     const idTokenFromUrl = urlParams.get('id_token');  // Récupérer id_token de l'URL
 
-    if (jwtTokenFromUrl && idTokenFromUrl) {
+    if (jwtTokenFromUrl) {
       localStorage.setItem('jwt_token', jwtTokenFromUrl);
+      window.history.replaceState({}, document.title, window.location.pathname);  // Nettoyer l'URL
+      handleAuthCallback();
+      return;
+    }
+    
+    if ( idTokenFromUrl) {
       localStorage.setItem('id_token', idTokenFromUrl); // Enregistrer id_token dans localStorage
       window.history.replaceState({}, document.title, window.location.pathname);  // Nettoyer l'URL
       handleAuthCallback();
