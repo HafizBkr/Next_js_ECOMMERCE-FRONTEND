@@ -1,17 +1,18 @@
-"use client"
+"use client";
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Minus, Plus, X, ArrowLeft, ShoppingBag, Shield, CreditCard } from 'lucide-react';
-import { usePanier } from '../../hooks/usePanier'; // Adjust import path as needed
+import { usePanier } from '../../hooks/usePanier';
+import { useCommande } from '../../hooks/useCommande';
+import Link from 'next/link';
 
-// Define types to match the hook's data structure
 interface Produit {
   ID: string;
   Nom: string;
   Prix: number;
   Marque: string;
   Photo: string;
-  quantity:number;
+  quantity: number;
 }
 
 const CartPage = () => {
@@ -22,16 +23,15 @@ const CartPage = () => {
     supprimerProduit 
   } = usePanier();
 
+  const { creerCommande, loading: commandeLoading, error: commandeError } = useCommande();
   const [cartItems, setCartItems] = useState<Produit[]>([]);
 
-  // Sync local state with panier data
   useEffect(() => {
     if (panier?.data) {
       setCartItems(panier.data);
     }
   }, [panier]);
 
-  // Quantity update logic (client-side only)
   const updateQuantity = (id: string, change: number) => {
     setCartItems(items =>
       items.map(item =>
@@ -42,19 +42,86 @@ const CartPage = () => {
     );
   };
 
-  // Remove item using the hook's method
   const removeItem = (id: string) => {
     supprimerProduit(id);
   };
 
-  // Calculate totals
   const subtotal = cartItems.reduce((sum, item) => sum + item.Prix * (item.quantity || 1), 0);
   const shipping = 0;
   const total = subtotal + shipping;
 
-  // Loading and error handling
-  if (loading) return <div>Chargement du panier...</div>;
-  if (error) return <div>Erreur: {error}</div>;
+  const handleCommander = async () => {
+    const produitsCommande = cartItems.map(item => ({
+      produit_id: item.ID,
+      quantite: item.quantity || 1,
+    }));
+
+    try {
+      await creerCommande(produitsCommande);
+      alert("Commande passée avec succès !");
+    } catch (err) {
+      alert("Erreur lors de la création de la commande : " + err.message);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-xl text-gray-600">Chargement du panier...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center p-8"
+        >
+          <X className="w-24 h-24 mx-auto text-red-500 mb-6" />
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">Votre panier est vide </h2>
+          <Link href="/Products">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3 mx-auto"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              Retour à la boutique
+            </motion.button>
+          </Link>
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (!cartItems.length) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center p-8"
+        >
+          <ShoppingBag className="w-24 h-24 mx-auto text-gray-300 mb-6" />
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">Votre panier est vide</h2>
+          <p className="text-gray-600 mb-8">Découvrez notre sélection de produits dans notre boutique</p>
+          <Link href="/boutique">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3 mx-auto"
+            >
+              <ShoppingBag className="w-5 h-5" />
+              Aller à la boutique
+            </motion.button>
+          </Link>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -71,10 +138,12 @@ const CartPage = () => {
             </h1>
             <p className="text-gray-500 mt-1">{cartItems.length} article(s)</p>
           </div>
-          <button className="group flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
-            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-            <span className="font-medium">Continuer mes achats</span>
-          </button>
+          <Link href="/boutique">
+            <button className="group flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+              <span className="font-medium">Continuer mes achats</span>
+            </button>
+          </Link>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -121,7 +190,9 @@ const CartPage = () => {
                         >
                           <Minus className="w-4 h-4" />
                         </button>
-                        <span className="w-12 text-center font-medium">{item.quantity || 1}</span>
+                        <span className="w-12 text-center font-medium">
+                          {item.quantity || 1}
+                        </span>
                         <button
                           onClick={() => updateQuantity(item.ID, 1)}
                           className="p-2 rounded-full hover:bg-white hover:shadow-md transition-all"
@@ -129,7 +200,9 @@ const CartPage = () => {
                           <Plus className="w-4 h-4" />
                         </button>
                       </div>
-                      <p className="text-xl font-semibold">{((item.Prix * (item.quantity || 1)).toFixed(2))} €</p>
+                      <p className="text-xl font-semibold">
+                        {((item.Prix * (item.quantity || 1)).toFixed(2))} €
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -137,7 +210,7 @@ const CartPage = () => {
             ))}
           </div>
 
-          {/* Récapitulatif (reste identique) */}
+          {/* Récapitulatif */}
           <div className="lg:col-span-1 space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -159,8 +232,12 @@ const CartPage = () => {
                   <span>Total</span>
                   <span>{total.toFixed(2)} €</span>
                 </div>
-                <button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-full py-4 font-medium mt-6 transform hover:scale-[1.02] transition-all shadow-lg hover:shadow-xl">
-                  Passer la commande
+                <button
+                  onClick={handleCommander}
+                  disabled={commandeLoading}
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-full py-4 font-medium mt-6 transform hover:scale-[1.02] transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {commandeLoading ? "Traitement en cours..." : "Passer la commande"}
                 </button>
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-500 mt-4">
                   <Shield className="w-4 h-4" />
@@ -169,8 +246,8 @@ const CartPage = () => {
               </div>
             </motion.div>
 
-              {/* Options de paiement */}
-              <motion.div
+            {/* Options de paiement */}
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
@@ -179,7 +256,10 @@ const CartPage = () => {
               <h3 className="font-semibold mb-4">Moyens de paiement acceptés</h3>
               <div className="grid grid-cols-4 gap-4">
                 {['visa', 'mastercard', 'paypal', 'apple-pay'].map((payment) => (
-                  <div key={payment} className="bg-white p-2 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                  <div 
+                    key={payment}
+                    className="bg-white p-2 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                  >
                     <img 
                       src={`/${payment}-logo.png`} 
                       alt={payment}
@@ -214,7 +294,10 @@ const CartPage = () => {
                   description: "Vos données sont protégées"
                 }
               ].map((item, index) => (
-                <div key={index} className="flex items-center gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div 
+                  key={index}
+                  className="flex items-center gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
+                >
                   <item.icon className="w-8 h-8 text-blue-600" />
                   <div>
                     <h3 className="font-medium">{item.title}</h3>

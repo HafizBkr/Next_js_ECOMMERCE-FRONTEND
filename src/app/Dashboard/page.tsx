@@ -10,6 +10,7 @@ import EventSection from '../components/Dashboard/EventSection';
 import CustomerSection from '../components/Dashboard/CustomerSection';
 import CategorySection from '../components/Dashboard/CategorySection';
 import EvCategorySection from '../components/Dashboard/EventCategorySection';
+import OrderSection from '../components/Dashboard/ordersSection';
 import useAuth from '../hooks/useAuth'; 
 
 // Types pour les données
@@ -103,11 +104,28 @@ const AdminDashboard = () => {
   // Vérifier l'existence du token dans localStorage
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
+  
     if (!token) {
-      // Si aucun token n'est trouvé, rediriger vers la page de connexion
+      router.push('/login');
+      return;
+    }
+  
+    try {
+      // Vérification si le token est un JWT valide (si applicable)
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const isExpired = payload.exp * 1000 < Date.now();
+  
+      if (isExpired) {
+        localStorage.removeItem('admin_token'); // Supprimer le token expiré
+        router.push('/login');
+      }
+    } catch (error) {
+      // Si le token est mal formaté, on le supprime et on redirige
+      localStorage.removeItem('admin_token');
       router.push('/login');
     }
   }, [router]);
+  
 
   useAuth();
 
@@ -125,6 +143,7 @@ const AdminDashboard = () => {
               setSearchTerm={setSearchTerm}
             />
           )}
+          {activeSection === 'orders' && <OrderSection />}
           {activeSection === 'events' && <EventSection />}
           {activeSection === 'customers' && (
             <CustomerSection customers={customers} onAddCustomer={handleAddCustomer} />

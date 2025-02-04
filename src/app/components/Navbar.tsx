@@ -49,7 +49,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
         { title: 'Collections', image: montre.src, link: '/Products' },
         { title: 'Marques', image: airpods.src, link: '/Products' }
       ],
-      featured: ['Nike', 'Adidas', 'Zara', 'H&M']
+      featured: ['Google', 'Dell', 'Apple', 'SAMSUNG']
     },
     { 
       label: 'Evenements', 
@@ -94,12 +94,10 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
     const query = e.target.value;
     setSearchQuery(query);
     
-    // Clear previous timeout
     if (debouncedSearch) {
       clearTimeout(debouncedSearch);
     }
 
-    // Set new timeout
     const timerId = setTimeout(() => {
       searchProducts(query);
     }, 300);
@@ -108,7 +106,6 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
   };
 
   useEffect(() => {
-    // Clean up timeout on component unmount
     return () => {
       if (debouncedSearch) {
         clearTimeout(debouncedSearch);
@@ -157,7 +154,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
         <h3 className={styles.logo}>E-Commerce</h3>
         
         <ul className={`${styles.navLinks} ${isMobileMenuOpen ? styles.mobileMenuOpen : ''}`}>
-          {navItems.map((item, index) => (
+          {navItems.map((item, index) => ( 
             <li
               key={index}
               className={`${styles.navItem} nav-item`}
@@ -214,7 +211,6 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
         </ul>
 
         <div className={styles.iconContainer}>
-          {/* Icône Rechercher */}
           <div className={`${styles.navItem} nav-item`}>
             <button 
               className={`${styles.iconButton} ${activeDropdown === 0 ? styles.active : ''}`} 
@@ -238,38 +234,69 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
                       />
                     </div>
                     {searchQuery && (
-                      <div className={styles.searchResultsDropdown}>
-                        {loading ? (
-                          <div className={styles.searchLoadingIndicator}>Chargement...</div>
-                        ) : error ? (
-                          <div className={styles.searchErrorIndicator}>{error}</div>
-                        ) : searchResults.length === 0 ? (
-                          <div className={styles.searchNoResults}>Aucun résultat</div>
-                        ) : (
-                          searchResults.map(product => (
-                            <Link 
-                              key={product.id} 
-                              href={`/SingleProductPage/${product.id}`} 
-                              className={styles.searchResultItem}
-                            >
-                              <img 
-                                src={product.photos?.[0]} 
-                                alt={product.nom} 
-                                className={styles.searchResultImage} 
-                              />
-                              <div className={styles.searchResultDetails}>
-                                <h4>{product.nom}</h4>
-                                <p>{product.prix}€</p>
-                              </div>
-                            </Link>
-                          ))
-                        )}
-                      </div>
-                    )}
+  <div className={styles.searchResultsContainer}>
+    <div className={styles.searchResultsDropdown}>
+      {loading ? (
+        <div className={styles.searchLoadingIndicator}>
+          <div className={styles.loadingSpinner}></div>
+          Recherche en cours...
+        </div>
+      ) : error ? (
+        <div className={styles.searchErrorIndicator}>
+          {error}
+        </div>
+      ) : Array.isArray(searchResults) && searchResults.length === 0 ? (
+        <div className={styles.searchNoResults}>
+          Aucun résultat trouvé pour "{searchQuery}"
+        </div>
+      ) : Array.isArray(searchResults) ? (
+        searchResults.map(product => (
+          <Link 
+            key={product.id} 
+            href={`/SingleProductPage/${product.id}`} 
+            className={styles.searchResultItem}
+          >
+            <img 
+              src={product.photos?.[0] || '/placeholder-image.jpg'} 
+              alt={product.nom}
+              className={styles.searchResultImage}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = '/placeholder-image.jpg';
+              }}
+            />
+            <div className={styles.searchResultDetails}>
+              <h4>{product.nom}</h4>
+              <div className={styles.productDescription}>
+                {product.description && product.description.slice(0, 100)}
+                {product.description && product.description.length > 100 ? '...' : ''}
+              </div>
+              <div className={styles.productInfo}>
+                <p>{product.prix.toFixed(2)}€</p>
+                <span className={styles.stockBadge}>
+                  {product.stock > 0 ? 'En stock' : 'Rupture de stock'}
+                </span>
+              </div>
+              {product.marque && (
+                <div className={styles.brandInfo}>
+                  Marque: {product.marque}
+                </div>
+              )}
+            </div>
+          </Link>
+        ))
+      ) : (
+        <div className={styles.searchErrorIndicator}>
+          Une erreur est survenue lors de la recherche
+        </div>
+      )}
+    </div>
+  </div>
+)}
                     <div className={styles.quickLinksSection}>
                       <h3>Liens rapides</h3>
                       <ul>
-                        {['Apple Vision Pro', 'Cadeaux', 'AirPods', 'AirTag', 'Apple Trade In'].map((link, index) => (
+                        {['Ordinateurs', 'Telephones', 'Claviers'].map((link, index) => (
                           <li key={index}>
                             <Link href="#" className={styles.dropdownLink}>
                               {link}
@@ -284,7 +311,6 @@ const Navbar: React.FC<NavbarProps> = ({ activeDropdown, onDropdownChange }) => 
             )}
           </div>
 
-          {/* Icône Panier */}
           <div className={`${styles.navItem} nav-item`}>
             <button 
               className={`${styles.iconButton} ${activeDropdown === 1 ? styles.active : ''}`}

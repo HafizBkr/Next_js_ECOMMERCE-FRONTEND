@@ -1,15 +1,31 @@
 import { useState } from 'react';
 
-// Définir les types pour les commandes
+// Interface pour les produits dans une commande
 interface ProduitCommande {
-  produit_id: string;
+  nom: string;
+  prix_unite: number;
   quantite: number;
+  model: string;
+  etat: string;
+  localisation: string;
+  photos: string[];
 }
 
+// Interface pour la structure complète d'une commande
 interface Commande {
-  id: string; // Identifiant de la commande
+  id: string;
+  numero_commande: string;
+  user_id: string;
+  montant_total: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
   produits: ProduitCommande[];
-  date_creation: string; // Date de création de la commande
+}
+
+// Interface pour la réponse de l'API
+interface CommandeResponse {
+  data: Commande[];
 }
 
 export function useCommande() {
@@ -80,8 +96,8 @@ export function useCommande() {
         throw new Error('Échec de la récupération des commandes');
       }
 
-      const data: Commande[] = await response.json();
-      setCommandes(data);
+      const responseData: CommandeResponse = await response.json();
+      setCommandes(responseData.data);
     } catch (err: any) {
       setError(err.message);
     } finally {

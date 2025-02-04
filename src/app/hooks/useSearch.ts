@@ -49,8 +49,9 @@ const useProductSearch = (): ProductSearchHook => {
         throw new Error(`Recherche échouée: ${response.status} - ${errorBody}`);
       }
 
-      const data: Product[] = await response.json();
-      setSearchResults(data);
+      const data = await response.json();
+      // Ensure we always set an array, even if the API returns null or undefined
+      setSearchResults(Array.isArray(data) ? data : []);
     } catch (err) {
       const errorMessage = err instanceof Error 
         ? err.message 
