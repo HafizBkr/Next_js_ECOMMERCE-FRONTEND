@@ -19,6 +19,8 @@ interface Product {
   updated_at: string;
 }
 
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
+
 const useProductByID = (productId: string) => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -28,7 +30,7 @@ const useProductByID = (productId: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://localhost:8080/products/${productId}`);
+      const response = await fetch(`${API_URL}/products/${productId}`);
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         throw new Error(

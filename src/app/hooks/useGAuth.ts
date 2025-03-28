@@ -21,6 +21,7 @@ interface UserProfile {
   residence_country?: string;
 }
 
+
 interface CompleteProfileData {
   address: string;
   phone_number: string;
@@ -34,6 +35,7 @@ interface AuthState {
   error: string | null;
 }
 
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
 export const useAuth = () => {
   const [state, setState] = useState<AuthState>({
     user: null,
@@ -80,7 +82,7 @@ export const useAuth = () => {
 
   const initiateGoogleAuth = useCallback(() => {
     sessionStorage.setItem('redirect_after_login', window.location.href);
-    window.location.href = 'http://localhost:8080/oauth-test';
+    window.location.href = `${API_URL}/oauth-test`;
   }, []);
 
   const completeProfile = useCallback(async (profileData: CompleteProfileData) => {
@@ -92,7 +94,7 @@ export const useAuth = () => {
         throw new Error('No ID token found');
       }
   
-      const response = await fetch('http://localhost:8080/complete-profile', {
+      const response = await fetch(`${API_URL}/complete-profile`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -128,7 +130,7 @@ export const useAuth = () => {
         throw new Error('No JWT token found');
       }
 
-      const response = await fetch('http://localhost:8080/user/info', {
+      const response = await fetch(`${API_URL}/user/info`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -164,7 +166,7 @@ export const useAuth = () => {
     try {
       setState(prev => ({ ...prev, loading: true }));
       
-      const response = await fetch('http://localhost:8080/auth/callback', {
+      const response = await fetch(`${API_URL}/auth/callback`, {
         method: 'GET',
         credentials: 'include',
       });

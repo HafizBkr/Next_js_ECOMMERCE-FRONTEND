@@ -7,6 +7,7 @@ interface AdminCredentials {
   password: string;
 }
 
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL|| 'http://localhost:8080';
 const useAdminAuth = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,7 +18,7 @@ const useAdminAuth = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8080/admin/login', {
+      const response = await fetch(`${API_URL}/admin/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

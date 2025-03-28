@@ -53,8 +53,9 @@ interface CreateProductResponse {
   productId?: string;
   error?: string;
 }
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
 
-const API_BASE_URL = 'http://localhost:8080'; // URL de base pour les appels API
+const API_BASE_URL = `${API_URL}`; // URL de base pour les appels API
 const UPLOAD_API_URL = 'http://localhost:3000/api/upload'; // URL pour l'upload d'images
 
 const useProducts = (productId: string): UseProductsReturn => {

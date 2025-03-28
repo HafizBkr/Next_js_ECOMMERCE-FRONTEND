@@ -13,6 +13,8 @@ interface CategoryFormData {
   statut: 'active' | 'inactive';
 }
 
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
+
 const useCategories = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -23,15 +25,22 @@ const useCategories = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:8080/categories');
+      console.log("Fetching from:", `${API_URL}/categories`);
+      const response = await fetch(`${API_URL}/categories`);
+  
+      console.log("Response status:", response.status);
+  
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
+        console.error("Erreur API:", response.status, response.statusText, errorData);
         throw new Error(
           `Erreur lors de la récupération des catégories: ${response.status} ${response.statusText}` +
           (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : '')
         );
       }
+  
       const data: Category[] = await response.json();
+      console.log("Données récupérées:", data);
       setCategories(data);
     } catch (err) {
       if (err instanceof Error) {
@@ -39,11 +48,12 @@ const useCategories = () => {
       } else {
         setError('Erreur inconnue');
       }
-      console.error('Erreur détaillée:', err);
+      console.error("Erreur détaillée:", err);
     } finally {
       setLoading(false);
     }
   }, []);
+  
 
   // Ajouter une nouvelle catégorie
   const addCategory = async (categoryData: CategoryFormData) => {
@@ -55,7 +65,7 @@ const useCategories = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/categories', {
+      const response = await fetch(`${API_URL}/categories`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +108,7 @@ const useCategories = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8080/categories/${id}`, {
+      const response = await fetch(`${API_URL}/categories/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -141,7 +151,7 @@ const useCategories = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8080/categories/${id}`, {
+      const response = await fetch(`${API_URL}/categories/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

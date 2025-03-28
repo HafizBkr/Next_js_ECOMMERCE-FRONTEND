@@ -17,6 +17,7 @@ interface ProductSearchHook {
   error: string | null;
   searchProducts: (query: string) => Promise<void>;
 }
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
 
 const useProductSearch = (): ProductSearchHook => {
   const [searchResults, setSearchResults] = useState<Product[]>([]);
@@ -34,7 +35,7 @@ const useProductSearch = (): ProductSearchHook => {
     setError(null);
 
     try {
-      const url = `http://localhost:8080/products/search?q=${encodeURIComponent(query.trim())}`;
+      const url = `${API_URL}/products/search?q=${encodeURIComponent(query.trim())}`;
       
       const response = await fetch(url, {
         method: 'GET',

@@ -18,6 +18,7 @@ interface Product {
   created_at: string;
   updated_at: string;
 }
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
 
 const useProductsByCategoryID = (categoryId: string) => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -30,7 +31,7 @@ const useProductsByCategoryID = (categoryId: string) => {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:8080/products/by-category/${categoryId}`);
+      const response = await fetch(`${API_URL}/products/by-category/${categoryId}`);
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         throw new Error(

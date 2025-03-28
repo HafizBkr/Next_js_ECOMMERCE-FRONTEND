@@ -12,7 +12,7 @@ interface Order {
   created_at: string;
   updated_at: string;
 }
-
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL|| 'http://localhost:8080';
 const useOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -31,7 +31,7 @@ const useOrders = () => {
       }
 
       // Ajouter le token dans les en-têtes de la requête
-      const response = await fetch('http://localhost:8080/ordres/all', {
+      const response = await fetch(`${API_URL}/ordres/all`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

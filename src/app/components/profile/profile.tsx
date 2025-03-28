@@ -161,7 +161,7 @@ const ModernProfile = () => {
                 <h3 className="text-xl font-bold mb-4">Dernières Commandes</h3>
                 {commandes && commandes.length > 0 ? (
                   <div className="space-y-4">
-                    {commandes.map((commande) => (
+                    {commandes.reverse().map((commande) => (
                       <div key={commande.id} className="border rounded-lg p-4">
                         <div className="flex justify-between items-center mb-4">
                           <div>

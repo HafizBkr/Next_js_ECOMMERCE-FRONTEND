@@ -13,6 +13,8 @@ interface Panier {
   status?: string;
 }
 
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
+
 // Définir le hook usePanier
 export function usePanier() {
   const [panier, setPanier] = useState<Panier | null>(null);
@@ -35,7 +37,7 @@ export function usePanier() {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/panier', {
+      const response = await fetch(`${API_URL}/panier`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -68,7 +70,7 @@ export function usePanier() {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/panier/ajouter', {
+      const response = await fetch(`${API_URL}/panier/ajouter`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,7 +104,7 @@ export function usePanier() {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/panier/enlever', {
+      const response = await fetch(`${API_URL}/panier/enlever`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

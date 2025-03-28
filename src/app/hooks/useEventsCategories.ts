@@ -8,7 +8,7 @@ interface EventCategory {
 interface EventCategoryFormData {
   label: string;
 }
-
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
 const useEventCategories = () => {
   const [categories, setCategories] = useState<EventCategory[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -19,7 +19,7 @@ const useEventCategories = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:8080/event-categories');
+      const response = await fetch('${API_URL}/event-categories');
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         throw new Error(
@@ -50,7 +50,7 @@ const useEventCategories = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/event-categories', {
+      const response = await fetch('${API_URL}/event-categories', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -88,7 +88,7 @@ const useEventCategories = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8080/event-categories/${id}`, {
+      const response = await fetch(`${API_URL}/event-categories/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -126,7 +126,7 @@ const useEventCategories = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8080/event-categories/${id}`, {
+      const response = await fetch(`${API_URL}/event-categories/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

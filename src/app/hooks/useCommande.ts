@@ -10,7 +10,7 @@ interface ProduitCommande {
   localisation: string;
   photos: string[];
 }
-
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
 // Interface pour la structure complète d'une commande
 interface Commande {
   id: string;
@@ -51,7 +51,7 @@ export function useCommande() {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/commandes', {
+      const response = await fetch(`${API_URL}/commandes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ export function useCommande() {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/commandes', {
+      const response = await fetch(`${API_URL}/commandes`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
