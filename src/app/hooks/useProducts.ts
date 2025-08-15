@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
 
 interface Category {
   id: string;
@@ -39,7 +39,9 @@ interface UseProductsReturn {
   categories: Category[];
   loading: boolean;
   error: string | null;
-  createProduct: (productData: ProductFormData) => Promise<CreateProductResponse>;
+  createProduct: (
+    productData: ProductFormData,
+  ) => Promise<CreateProductResponse>;
   deleteProduct: (id: string) => Promise<void>;
   getProduct: (id: string) => Promise<Product>;
   getAllProducts: () => Promise<void>;
@@ -53,43 +55,48 @@ interface CreateProductResponse {
   productId?: string;
   error?: string;
 }
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
+const API_URL =
+  process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8080";
 
 const API_BASE_URL = `${API_URL}`; // URL de base pour les appels API
-const UPLOAD_API_URL = 'http://localhost:3000/api/upload'; // URL pour l'upload d'images
+const UPLOAD_API_URL = "http://localhost:3000/api/upload"; // URL pour l'upload d'images
 
-const useProducts = (productId: string): UseProductsReturn => {
+const useProducts = (): UseProductsReturn => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleApiError = (error: unknown) => {
-    const errorMessage = error instanceof Error ? error.message : 'Une erreur est survenue';
+    const errorMessage =
+      error instanceof Error ? error.message : "Une erreur est survenue";
     setError(errorMessage);
-    console.error('Erreur détaillée:', error);
+    console.error("Erreur détaillée:", error);
     throw new Error(errorMessage);
   };
 
   const getAuthHeaders = () => {
-    const token = localStorage.getItem('admin_token');
+    const token = localStorage.getItem("admin_token");
     if (!token) {
       throw new Error("Token d'administration manquant");
     }
     return {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
   };
 
-  const fetchApi = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
+  const fetchApi = async <T>(
+    endpoint: string,
+    options: RequestInit = {},
+  ): Promise<T> => {
     try {
       const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         throw new Error(
           `${response.status} ${response.statusText}` +
-            (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : '')
+            (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : ""),
         );
       }
       return await response.json();
@@ -101,33 +108,36 @@ const useProducts = (productId: string): UseProductsReturn => {
 
   const uploadImages = async (files: File[]): Promise<string[]> => {
     const formData = new FormData();
-    files.forEach((file) => formData.append('file', file));
-  
+    files.forEach((file) => formData.append("file", file));
+
     try {
       const response = await fetch(UPLOAD_API_URL, {
-        method: 'POST',
+        method: "POST",
         body: formData,
       });
       if (!response.ok) {
         throw new Error(`Upload échoué: ${response.statusText}`);
       }
       const data: { urls: string[] } = await response.json();
-      console.log('URLs des fichiers téléchargés:', data.urls);  // Log pour vérifier les URLs
+      console.log("URLs des fichiers téléchargés:", data.urls); // Log pour vérifier les URLs
       return data.urls;
     } catch (error) {
       handleApiError(error);
       return [];
     }
   };
-  
-  
-  const createProduct = async (productData: ProductFormData): Promise<CreateProductResponse> => {
+
+  const createProduct = async (
+    productData: ProductFormData,
+  ): Promise<CreateProductResponse> => {
     setLoading(true);
     setError(null);
     try {
       // Téléchargement des images si elles existent
-      const photoUrls = productData.photos?.length ? await uploadImages(productData.photos) : [];
-  
+      const photoUrls = productData.photos?.length
+        ? await uploadImages(productData.photos)
+        : [];
+
       // Réorganiser les données dans l'ordre souhaité
       const finalProductData = {
         nom: productData.nom,
@@ -142,36 +152,45 @@ const useProducts = (productId: string): UseProductsReturn => {
         modele: productData.modele,
         disponible: productData.disponible,
       };
-  
+
       // Log pour déboguer l'objet final avant l'envoi
-      console.log('Data envoyée pour création de produit:', finalProductData);
-  
+      console.log("Data envoyée pour création de produit:", finalProductData);
+
       // Appel à l'API pour créer un produit
-      const newProduct = await fetchApi<Product>('/products', {
-        method: 'POST',
+      const newProduct = await fetchApi<Product>("/products", {
+        method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(finalProductData),
       });
-  
+
       // Ajouter le nouveau produit à la liste
       setProducts((prev) => [...prev, newProduct]);
-  
+
       return { success: true, productId: newProduct.id };
     } catch (error) {
       console.error("Erreur de création:", error);
-      return { success: false, error: error instanceof Error ? error.message : 'Une erreur est survenue' };
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Une erreur est survenue",
+      };
     } finally {
       setLoading(false);
     }
   };
 
-  const updateProduct = async (id: string, updatedData: ProductFormData): Promise<void> => {
+  const updateProduct = async (
+    id: string,
+    updatedData: ProductFormData,
+  ): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
       // Téléchargement des nouvelles images si elles existent
-      const updatedPhotos = updatedData.photos?.length ? await uploadImages(updatedData.photos) : [];
-  
+      const updatedPhotos = updatedData.photos?.length
+        ? await uploadImages(updatedData.photos)
+        : [];
+
       // Réorganiser les données pour l'API
       const finalUpdatedData = {
         ...updatedData,
@@ -179,21 +198,21 @@ const useProducts = (productId: string): UseProductsReturn => {
         stock: Number(updatedData.stock),
         photos: updatedPhotos,
       };
-  
-      console.log('Données mises à jour:', finalUpdatedData);
-  
+
+      console.log("Données mises à jour:", finalUpdatedData);
+
       // Appel à l'API pour mettre à jour le produit
       await fetchApi<void>(`/products/${id}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: getAuthHeaders(),
         body: JSON.stringify(finalUpdatedData),
       });
-  
+
       // Mettre à jour le produit dans l'état local
       setProducts((prev) =>
         prev.map((product) =>
-          product.id === id ? { ...product, ...finalUpdatedData } : product
-        )
+          product.id === id ? { ...product, ...finalUpdatedData } : product,
+        ),
       );
     } catch (error) {
       handleApiError(error);
@@ -201,13 +220,13 @@ const useProducts = (productId: string): UseProductsReturn => {
       setLoading(false);
     }
   };
-  
+
   const deleteProduct = async (id: string) => {
     setLoading(true);
     setError(null);
     try {
       await fetchApi(`/products/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: getAuthHeaders(),
       });
       setProducts((prev) => prev.filter((product) => product.id !== id));
@@ -232,7 +251,7 @@ const useProducts = (productId: string): UseProductsReturn => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchApi<Product[]>('/products');
+      const data = await fetchApi<Product[]>("/products");
       setProducts(data);
     } catch (error) {
       handleApiError(error);
@@ -245,7 +264,9 @@ const useProducts = (productId: string): UseProductsReturn => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchApi<Product[]>(`/products/by-category/${categoryId}`);
+      const data = await fetchApi<Product[]>(
+        `/products/by-category/${categoryId}`,
+      );
       setProducts(data);
     } catch (error) {
       handleApiError(error);
@@ -258,7 +279,7 @@ const useProducts = (productId: string): UseProductsReturn => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchApi<Category[]>('/categories');
+      const data = await fetchApi<Category[]>("/categories");
       setCategories(data);
     } catch (error) {
       handleApiError(error);

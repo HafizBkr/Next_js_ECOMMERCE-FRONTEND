@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from "react";
 
 interface EventCategory {
   id: string;
@@ -8,7 +8,8 @@ interface EventCategory {
 interface EventCategoryFormData {
   label: string;
 }
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
+const API_URL =
+  process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8080";
 const useEventCategories = () => {
   const [categories, setCategories] = useState<EventCategory[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -19,12 +20,12 @@ const useEventCategories = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('${API_URL}/event-categories');
+      const response = await fetch("${API_URL}/event-categories");
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         throw new Error(
           `Erreur lors de la récupération des catégories: ${response.status} ${response.statusText}` +
-          (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : '')
+            (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : ""),
         );
       }
       const data: EventCategory[] = await response.json();
@@ -33,9 +34,9 @@ const useEventCategories = () => {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('Erreur inconnue');
+        setError("Erreur inconnue");
       }
-      console.error('Erreur détaillée:', err);
+      console.error("Erreur détaillée:", err);
     } finally {
       setLoading(false);
     }
@@ -43,18 +44,18 @@ const useEventCategories = () => {
 
   const addEventCategory = async (categoryData: EventCategoryFormData) => {
     setError(null);
-    const token = localStorage.getItem('admin_token');
+    const token = localStorage.getItem("admin_token");
     if (!token) {
-      setError('Token d\'administration manquant');
+      setError("Token d'administration manquant");
       return;
     }
 
     try {
-      const response = await fetch('${API_URL}/event-categories', {
-        method: 'POST',
+      const response = await fetch("${API_URL}/event-categories", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(categoryData),
       });
@@ -63,7 +64,7 @@ const useEventCategories = () => {
         const errorData = await response.json().catch(() => null);
         throw new Error(
           `Erreur lors de l'ajout de la catégorie: ${response.status} ${response.statusText}` +
-          (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : '')
+            (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : ""),
         );
       }
 
@@ -75,24 +76,27 @@ const useEventCategories = () => {
       } else {
         setError("Erreur inconnue");
       }
-      console.error('Erreur détaillée:', err);
+      console.error("Erreur détaillée:", err);
     }
   };
 
-  const editEventCategory = async (id: string, categoryData: EventCategoryFormData) => {
+  const editEventCategory = async (
+    id: string,
+    categoryData: EventCategoryFormData,
+  ) => {
     setError(null);
-    const token = localStorage.getItem('admin_token');
+    const token = localStorage.getItem("admin_token");
     if (!token) {
-      setError('Token d\'administration manquant');
+      setError("Token d'administration manquant");
       return;
     }
 
     try {
       const response = await fetch(`${API_URL}/event-categories/${id}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(categoryData),
       });
@@ -101,7 +105,7 @@ const useEventCategories = () => {
         const errorData = await response.json().catch(() => null);
         throw new Error(
           `Erreur lors de la modification de la catégorie: ${response.status} ${response.statusText}` +
-          (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : '')
+            (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : ""),
         );
       }
 
@@ -113,23 +117,23 @@ const useEventCategories = () => {
       } else {
         setError("Erreur inconnue");
       }
-      console.error('Erreur détaillée:', err);
+      console.error("Erreur détaillée:", err);
     }
   };
 
   const deleteEventCategory = async (id: string) => {
     setError(null);
-    const token = localStorage.getItem('admin_token');
+    const token = localStorage.getItem("admin_token");
     if (!token) {
-      setError('Token d\'administration manquant');
+      setError("Token d'administration manquant");
       return;
     }
 
     try {
       const response = await fetch(`${API_URL}/event-categories/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -137,22 +141,23 @@ const useEventCategories = () => {
       let errorData;
       try {
         errorData = text ? JSON.parse(text) : null;
-      } catch (e) {
+      } catch {
         errorData = text;
       }
 
       if (!response.ok) {
         throw new Error(
           `Erreur lors de la suppression de la catégorie: ${response.status} ${response.statusText}` +
-          (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : '')
+            (errorData ? `\nDétails: ${JSON.stringify(errorData)}` : ""),
         );
       }
 
       // Récupérer les données actualisées après suppression
       await fetchEventCategories();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Erreur lors de la suppression";
-      console.error('Erreur détaillée:', err);
+      const errorMessage =
+        err instanceof Error ? err.message : "Erreur lors de la suppression";
+      console.error("Erreur détaillée:", err);
       setError(errorMessage);
     }
   };

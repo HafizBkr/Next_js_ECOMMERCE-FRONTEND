@@ -1,25 +1,21 @@
 // /src/app/components/AdminLoginForm.tsx
-import React, { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import React, { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { Input } from "./input";
-import { Divider } from './Divider';
-import useAdminAuth from '../../hooks/userAdminAuth';  // Correction de l'importation
+import { Divider } from "./Divider";
+import useAdminAuth from "../../hooks/userAdminAuth"; // Correction de l'importation
 
-interface AdminLoginFormProps {
-  onToggle: () => void;
-}
-
-export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onToggle }) => {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+export const AdminLoginForm: React.FC = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const { login, loading, error } = useAdminAuth();  // Utilisation du hook
+  const { login, loading, error } = useAdminAuth(); // Utilisation du hook
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const credentials = { email, password };
-    await login(credentials);  // Appel de la fonction de login
+    await login(credentials); // Appel de la fonction de login
   };
 
   return (
@@ -39,12 +35,11 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onToggle }) => {
           placeholder="vous@example.com"
           required
           value={email}
-          onChange={(e) => setEmail(e.target.value)}  // Mise à jour de l'email
+          onChange={(e) => setEmail(e.target.value)} // Mise à jour de l'email
         />
-
         <Input
           label="Mot de passe"
-          type={showPassword ? 'text' : 'password'}
+          type={showPassword ? "text" : "password"}
           placeholder="••••••••"
           required
           rightElement={
@@ -57,17 +52,16 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onToggle }) => {
             </button>
           }
           value={password}
-          onChange={(e) => setPassword(e.target.value)}  // Mise à jour du mot de passe
+          onChange={(e) => setPassword(e.target.value)} // Mise à jour du mot de passe
         />
-
-        {error && <p className="text-red-500 text-sm">{error}</p>}  {/* Affichage de l'erreur */}
-
+        {error && <p className="text-red-500 text-sm">{error}</p>}{" "}
+        {/* Affichage de l'erreur */}
         <button
           type="submit"
           className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:opacity-90 transition-all duration-300 transform hover:-translate-y-0.5"
           disabled={loading}
         >
-          {loading ? 'Chargement...' : 'Se connecter'}
+          {loading ? "Chargement..." : "Se connecter"}
         </button>
       </form>
     </div>

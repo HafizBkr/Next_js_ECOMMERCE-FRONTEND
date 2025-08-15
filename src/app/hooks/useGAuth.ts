@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect } from 'react';
-import router from 'next/router';
+import { useState, useCallback, useEffect } from "react";
+import router from "next/router";
 
 interface UserProfile {
   email: string;
@@ -21,7 +21,6 @@ interface UserProfile {
   residence_country?: string;
 }
 
-
 interface CompleteProfileData {
   address: string;
   phone_number: string;
@@ -35,128 +34,145 @@ interface AuthState {
   error: string | null;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
+const API_URL =
+  process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8080";
 export const useAuth = () => {
   const [state, setState] = useState<AuthState>({
     user: null,
     loading: false,
-    error: null
+    error: null,
   });
 
   useEffect(() => {
     // Vérifier l'URL pour le jwt_token et l'id_token
     const urlParams = new URLSearchParams(window.location.search);
-    const jwtTokenFromUrl = urlParams.get('jwt_token');
-    const idTokenFromUrl = urlParams.get('id_token');  // Récupérer id_token de l'URL
+    const jwtTokenFromUrl = urlParams.get("jwt_token");
+    const idTokenFromUrl = urlParams.get("id_token"); // Récupérer id_token de l'URL
 
     if (jwtTokenFromUrl) {
-      localStorage.setItem('jwt_token', jwtTokenFromUrl);
-      window.history.replaceState({}, document.title, window.location.pathname);  // Nettoyer l'URL
+      localStorage.setItem("jwt_token", jwtTokenFromUrl);
+      if (typeof document !== "undefined") {
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname,
+        ); // Nettoyer l'URL
+      }
       handleAuthCallback();
       return;
     }
-    
-    if ( idTokenFromUrl) {
-      localStorage.setItem('id_token', idTokenFromUrl); // Enregistrer id_token dans localStorage
-      window.history.replaceState({}, document.title, window.location.pathname);  // Nettoyer l'URL
+
+    if (idTokenFromUrl) {
+      localStorage.setItem("id_token", idTokenFromUrl); // Enregistrer id_token dans localStorage
+      if (typeof document !== "undefined") {
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname,
+        ); // Nettoyer l'URL
+      }
       handleAuthCallback();
       return;
     }
 
     // Vérifier dans localStorage si un utilisateur et un token existent
-    const storedUserString = localStorage.getItem('user_profile');
-    const token = localStorage.getItem('jwt_token');
-    
+    const storedUserString = localStorage.getItem("user_profile");
+    const token = localStorage.getItem("jwt_token");
+
     if (storedUserString && token) {
       try {
         const storedUser = JSON.parse(storedUserString);
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
-          user: storedUser
+          user: storedUser,
         }));
       } catch (err) {
-        console.error('Error parsing stored user:', err);
+        console.error("Error parsing stored user:", err);
       }
     }
   }, []);
 
   const initiateGoogleAuth = useCallback(() => {
-    sessionStorage.setItem('redirect_after_login', window.location.href);
+    sessionStorage.setItem("redirect_after_login", window.location.href);
     window.location.href = `${API_URL}/oauth-test`;
   }, []);
 
-  const completeProfile = useCallback(async (profileData: CompleteProfileData) => {
-    try {
-      setState(prev => ({ ...prev, loading: true }));
-      const idToken = localStorage.getItem('id_token');
-      
-      if (!idToken) {
-        throw new Error('No ID token found');
+  const completeProfile = useCallback(
+    async (profileData: CompleteProfileData) => {
+      try {
+        setState((prev) => ({ ...prev, loading: true }));
+        const idToken = localStorage.getItem("id_token");
+
+        if (!idToken) {
+          throw new Error("No ID token found");
+        }
+
+        const response = await fetch(`${API_URL}/complete-profile`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+          body: JSON.stringify(profileData),
+        });
+
+        if (!response.ok) {
+          throw new Error("Profile completion failed");
+        }
+
+        // Rediriger après avoir complété le profil
+        router.push("/profile");
+        return await response.json();
+      } catch (err) {
+        setState((prev) => ({
+          ...prev,
+          error:
+            err instanceof Error ? err.message : "An unknown error occurred",
+        }));
+        throw err;
+      } finally {
+        setState((prev) => ({ ...prev, loading: false }));
       }
-  
-      const response = await fetch(`${API_URL}/complete-profile`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
-        },
-        body: JSON.stringify(profileData)
-      });
-  
-      if (!response.ok) {
-        throw new Error('Profile completion failed');
-      }
-  
-      // Rediriger après avoir complété le profil
-      router.push('/profile');
-      return await response.json();
-    } catch (err) {
-      setState(prev => ({
-        ...prev,
-        error: err instanceof Error ? err.message : 'An unknown error occurred'
-      }));
-      throw err;
-    } finally {
-      setState(prev => ({ ...prev, loading: false }));
-    }
-  }, []);
+    },
+    [],
+  );
 
   const fetchUserInfo = useCallback(async () => {
     try {
-      setState(prev => ({ ...prev, loading: true }));
-      const token = localStorage.getItem('jwt_token');
-      
+      setState((prev) => ({ ...prev, loading: true }));
+      const token = localStorage.getItem("jwt_token");
+
       if (!token) {
-        throw new Error('No JWT token found');
+        throw new Error("No JWT token found");
       }
 
       const response = await fetch(`${API_URL}/user/info`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch user info');
+        throw new Error("Failed to fetch user info");
       }
 
       const data: UserProfile = await response.json();
-      localStorage.setItem('user_profile', JSON.stringify(data));
-      
-      setState(prev => ({
+      localStorage.setItem("user_profile", JSON.stringify(data));
+
+      setState((prev) => ({
         ...prev,
         user: data,
         loading: false,
-        error: null
+        error: null,
       }));
 
       return data;
     } catch (err) {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         loading: false,
-        error: err instanceof Error ? err.message : 'An unknown error occurred'
+        error: err instanceof Error ? err.message : "An unknown error occurred",
       }));
       throw err;
     }
@@ -164,63 +180,63 @@ export const useAuth = () => {
 
   const handleAuthCallback = useCallback(async () => {
     try {
-      setState(prev => ({ ...prev, loading: true }));
-      
+      setState((prev) => ({ ...prev, loading: true }));
+
       const response = await fetch(`${API_URL}/auth/callback`, {
-        method: 'GET',
-        credentials: 'include',
+        method: "GET",
+        credentials: "include",
       });
-  
+
       if (!response.ok) {
-        throw new Error('Authentication failed');
+        throw new Error("Authentication failed");
       }
-  
+
       const data: UserProfile = await response.json();
-      
-      localStorage.setItem('jwt_token', data.jwt_token);
-      localStorage.setItem('id_token', data.google_id);
-      localStorage.setItem('user_profile', JSON.stringify(data));
-      
-      setState(prev => ({
+
+      localStorage.setItem("jwt_token", data.jwt_token);
+      localStorage.setItem("id_token", data.google_id);
+      localStorage.setItem("user_profile", JSON.stringify(data));
+
+      setState((prev) => ({
         ...prev,
         user: data,
         loading: false,
-        error: null
+        error: null,
       }));
-  
-      let redirectUrl = sessionStorage.getItem('redirect_after_login') || '/Products';
-      
-      if (redirectUrl.startsWith('http://localhost:3000')) {
-        redirectUrl = '/Products';
+
+      let redirectUrl =
+        sessionStorage.getItem("redirect_after_login") || "/Products";
+
+      if (redirectUrl.startsWith("http://localhost:3000")) {
+        redirectUrl = "/Products";
       }
-  
-      sessionStorage.removeItem('redirect_after_login');
-      
+
+      sessionStorage.removeItem("redirect_after_login");
+
       router.push(redirectUrl);
       return data;
-  
     } catch (err) {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         loading: false,
-        error: err instanceof Error ? err.message : 'An unknown error occurred'
+        error: err instanceof Error ? err.message : "An unknown error occurred",
       }));
       throw err;
     }
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem('jwt_token');
-    localStorage.removeItem('id_token');
-    localStorage.removeItem('user_profile');
-    
+    localStorage.removeItem("jwt_token");
+    localStorage.removeItem("id_token");
+    localStorage.removeItem("user_profile");
+
     setState({
       user: null,
       loading: false,
-      error: null
+      error: null,
     });
 
-    router.push('/login');
+    router.push("/login");
   }, []);
 
   return {
@@ -229,7 +245,7 @@ export const useAuth = () => {
     completeProfile,
     fetchUserInfo,
     handleAuthCallback,
-    logout
+    logout,
   };
 };
 

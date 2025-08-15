@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 interface Order {
   id: string;
@@ -12,7 +12,8 @@ interface Order {
   created_at: string;
   updated_at: string;
 }
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL|| 'http://localhost:8080';
+const API_URL =
+  process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8080";
 const useOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -22,20 +23,20 @@ const useOrders = () => {
     setLoading(true);
     try {
       // Récupérer le token depuis localStorage
-      const token = localStorage.getItem('admin_token');
+      const token = localStorage.getItem("admin_token");
 
       // Vérifier si le token existe
       if (!token) {
-        setError('Token d\'authentification manquant');
+        setError("Token d'authentification manquant");
         return;
       }
 
       // Ajouter le token dans les en-têtes de la requête
       const response = await fetch(`${API_URL}/ordres/all`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
 
@@ -43,10 +44,10 @@ const useOrders = () => {
       if (response.ok) {
         setOrders(data.data);
       } else {
-        setError('Erreur lors de la récupération des commandes');
+        setError("Erreur lors de la récupération des commandes");
       }
-    } catch (err) {
-      setError('Erreur de réseau');
+    } catch {
+      setError("Erreur de réseau");
     } finally {
       setLoading(false);
     }

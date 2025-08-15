@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Edit, Trash2, Plus, AlertCircle } from 'lucide-react';
-import useEventCategories from '../../hooks/useEventsCategories';
+import React, { useState } from "react";
+import { Edit, Trash2, Plus, AlertCircle } from "lucide-react";
+import useEventCategories from "../../hooks/useEventsCategories";
 
 interface EventCategory {
   id: string;
@@ -8,8 +8,8 @@ interface EventCategory {
 }
 
 const HEADERS = [
-  { id: 'category', label: 'Catégorie' },
-  { id: 'actions', label: 'Actions' }
+  { id: "category", label: "Catégorie" },
+  { id: "actions", label: "Actions" },
 ] as const;
 
 const EventCategoryTable: React.FC = () => {
@@ -23,7 +23,9 @@ const EventCategoryTable: React.FC = () => {
   } = useEventCategories();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<EventCategory | null>(null);
+  const [editingCategory, setEditingCategory] = useState<EventCategory | null>(
+    null,
+  );
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -47,7 +49,7 @@ const EventCategoryTable: React.FC = () => {
     try {
       const formData = new FormData(e.currentTarget);
       const categoryData = {
-        label: String(formData.get('label')),
+        label: String(formData.get("label")),
       };
 
       if (editingCategory) {
@@ -57,18 +59,22 @@ const EventCategoryTable: React.FC = () => {
       }
       closeModal();
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : 'Une erreur est survenue');
+      setFormError(
+        err instanceof Error ? err.message : "Une erreur est survenue",
+      );
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) {
+    if (
+      window.confirm("Êtes-vous sûr de vouloir supprimer cette catégorie ?")
+    ) {
       try {
         await deleteEventCategory(id);
       } catch (err) {
-        console.error('Erreur lors de la suppression:', err);
+        console.error("Erreur lors de la suppression:", err);
       }
     }
   };
@@ -95,7 +101,9 @@ const EventCategoryTable: React.FC = () => {
   return (
     <div className="space-y-6 p-6 bg-white rounded-lg shadow-sm">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold text-gray-800">Gestion des catégories d'événements</h2>
+        <h2 className="text-xl font-semibold text-gray-800">
+          Gestion des catégories d&apos;événements
+        </h2>
         <button
           onClick={() => openModal()}
           className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
@@ -109,42 +117,45 @@ const EventCategoryTable: React.FC = () => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-                        {HEADERS.map((header, index) => (
-            <th
-                key={`${header.id}-${index}`} // Assurez-vous que la clé est unique
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-                {header.label}
-            </th>
-            ))}
-
+              {HEADERS.map((header, index) => (
+                <th
+                  key={`${header.id}-${index}`} // Assurez-vous que la clé est unique
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  {header.label}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
-  {categories.map((category, index) => (
-    <tr key={`${category.id}-${index}`} className="hover:bg-gray-100 transition-colors">
-      <td className="px-6 py-4 whitespace-nowrap">{category.label}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => openModal(category)}
-                        className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition-colors"
-                    >
-                        <Edit className="w-5 h-5" />
-                    </button>
-                    <button
-                        onClick={() => handleDelete(category.id)}
-                        className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors"
-                    >
-                        <Trash2 className="w-5 h-5" />
-                    </button>
-                    </div>
+            {categories.map((category, index) => (
+              <tr
+                key={`${category.id}-${index}`}
+                className="hover:bg-gray-100 transition-colors"
+              >
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {category.label}
                 </td>
-                </tr>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => openModal(category)}
+                      className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition-colors"
+                    >
+                      <Edit className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(category.id)}
+                      className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
             ))}
-            </tbody>
-
+          </tbody>
         </table>
       </div>
 
@@ -153,7 +164,9 @@ const EventCategoryTable: React.FC = () => {
           <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-gray-900">
-                {editingCategory ? 'Modifier la catégorie' : 'Nouvelle catégorie'}
+                {editingCategory
+                  ? "Modifier la catégorie"
+                  : "Nouvelle catégorie"}
               </h2>
             </div>
 
@@ -165,14 +178,17 @@ const EventCategoryTable: React.FC = () => {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="label" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="label"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Nom de la catégorie
                 </label>
                 <input
                   type="text"
                   id="label"
                   name="label"
-                  defaultValue={editingCategory?.label || ''}
+                  defaultValue={editingCategory?.label || ""}
                   className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 />
@@ -197,8 +213,10 @@ const EventCategoryTable: React.FC = () => {
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       En cours...
                     </span>
+                  ) : editingCategory ? (
+                    "Modifier"
                   ) : (
-                    editingCategory ? 'Modifier' : 'Ajouter'
+                    "Ajouter"
                   )}
                 </button>
               </div>

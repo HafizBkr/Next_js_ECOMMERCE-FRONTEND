@@ -3,7 +3,7 @@ import Image from "next/image";
 import React from "react";
 import { Carousel, Card } from "@/app/components/carouselle";
 
-export function AppleCardsCarouselDemo() {
+const MainstorePage = () => {
   const cards = data.map((card, index) => (
     <Card key={card.src} card={card} index={index} layout={true} />
   ));
@@ -16,7 +16,7 @@ export function AppleCardsCarouselDemo() {
       <Carousel items={cards} />
     </div>
   );
-}
+};
 
 const DummyContent = () => {
   return (
@@ -90,4 +90,4 @@ const data = [
   },
 ];
 
-export default AppleCardsCarouselDemo;
+export default MainstorePage;

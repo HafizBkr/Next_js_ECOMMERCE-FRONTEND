@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 // Interface pour les produits dans une commande
 interface ProduitCommande {
@@ -10,7 +10,8 @@ interface ProduitCommande {
   localisation: string;
   photos: string[];
 }
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
+const API_URL =
+  process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8080";
 // Interface pour la structure complète d'une commande
 interface Commande {
   id: string;
@@ -35,7 +36,7 @@ export function useCommande() {
   const [success, setSuccess] = useState<boolean>(false);
 
   // Récupérer le JWT token depuis localStorage
-  const getToken = () => localStorage.getItem('jwt_token');
+  const getToken = () => localStorage.getItem("jwt_token");
 
   // Fonction pour créer une commande
   const creerCommande = async (produits: ProduitCommande[]) => {
@@ -45,28 +46,32 @@ export function useCommande() {
 
     const token = getToken();
     if (!token) {
-      setError('Token JWT introuvable');
+      setError("Token JWT introuvable");
       setLoading(false);
       return;
     }
 
     try {
       const response = await fetch(`${API_URL}/commandes`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ produits }),
       });
 
       if (!response.ok) {
-        throw new Error('Échec de la création de la commande');
+        throw new Error("Échec de la création de la commande");
       }
 
       setSuccess(true);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Erreur inconnue");
+      }
     } finally {
       setLoading(false);
     }
@@ -79,27 +84,31 @@ export function useCommande() {
 
     const token = getToken();
     if (!token) {
-      setError('Token JWT introuvable');
+      setError("Token JWT introuvable");
       setLoading(false);
       return;
     }
 
     try {
       const response = await fetch(`${API_URL}/commandes`, {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       if (!response.ok) {
-        throw new Error('Échec de la récupération des commandes');
+        throw new Error("Échec de la récupération des commandes");
       }
 
       const responseData: CommandeResponse = await response.json();
       setCommandes(responseData.data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Erreur inconnue");
+      }
     } finally {
       setLoading(false);
     }

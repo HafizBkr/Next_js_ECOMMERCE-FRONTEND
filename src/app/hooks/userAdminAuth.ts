@@ -1,13 +1,14 @@
 // /src/app/hooks/useAdminAuth.ts
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface AdminCredentials {
   email: string;
   password: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL|| 'http://localhost:8080';
+const API_URL =
+  process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8080";
 const useAdminAuth = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,27 +20,31 @@ const useAdminAuth = () => {
 
     try {
       const response = await fetch(`${API_URL}/admin/login`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(credentials),
       });
 
       if (!response.ok) {
-        throw new Error('Échec de la connexion');
+        throw new Error("Échec de la connexion");
       }
 
       const data = await response.json();
 
       // Sauvegarde du token et des données de l'administrateur dans le localStorage
-      localStorage.setItem('admin_token', data.token);
-      localStorage.setItem('admin_data', JSON.stringify(data.admin));
+      localStorage.setItem("admin_token", data.token);
+      localStorage.setItem("admin_data", JSON.stringify(data.admin));
 
       // Redirige vers le Dashboard
-      router.push('/Dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Une erreur est survenue');
+      router.push("/Dashboard");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Une erreur est survenue");
+      } else {
+        setError("Une erreur est survenue");
+      }
     } finally {
       setLoading(false);
     }

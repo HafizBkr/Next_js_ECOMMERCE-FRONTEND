@@ -1,29 +1,31 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Minus, Plus, X, ArrowLeft, ShoppingBag, Shield, CreditCard } from 'lucide-react';
-import { usePanier } from '../../hooks/usePanier';
-import { useCommande } from '../../hooks/useCommande';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import {
+  Minus,
+  Plus,
+  X,
+  ArrowLeft,
+  ShoppingBag,
+  Shield,
+  CreditCard,
+} from "lucide-react";
+import { usePanier } from "../../hooks/usePanier";
+import { useCommande } from "../../hooks/useCommande";
+import Link from "next/link";
 
 interface Produit {
-  ID: string;
-  Nom: string;
-  Prix: number;
-  Marque: string;
-  Photo: string;
-  quantity: number;
+  produit_id: string;
+  nom: string;
+  prix: number;
+  image: string;
+  quantity?: number;
 }
 
 const CartPage = () => {
-  const { 
-    panier, 
-    loading, 
-    error, 
-    supprimerProduit 
-  } = usePanier();
+  const { panier, loading, error, supprimerProduit } = usePanier();
 
-  const { creerCommande, loading: commandeLoading, error: commandeError } = useCommande();
+  const { creerCommande, loading: commandeLoading } = useCommande();
   const [cartItems, setCartItems] = useState<Produit[]>([]);
 
   useEffect(() => {
@@ -33,12 +35,12 @@ const CartPage = () => {
   }, [panier]);
 
   const updateQuantity = (id: string, change: number) => {
-    setCartItems(items =>
-      items.map(item =>
-        item.ID === id
+    setCartItems((items) =>
+      items.map((item) =>
+        item.produit_id === id
           ? { ...item, quantity: Math.max(1, (item.quantity || 1) + change) }
-          : item
-      )
+          : item,
+      ),
     );
   };
 
@@ -46,21 +48,33 @@ const CartPage = () => {
     supprimerProduit(id);
   };
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.Prix * (item.quantity || 1), 0);
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.prix * (item.quantity || 1),
+    0,
+  );
   const shipping = 0;
   const total = subtotal + shipping;
 
   const handleCommander = async () => {
-    const produitsCommande = cartItems.map(item => ({
-      produit_id: item.ID,
+    const produitsCommande = cartItems.map((item) => ({
+      nom: item.nom,
+      prix_unite: item.prix,
       quantite: item.quantity || 1,
+      model: "", // Provide a sensible default or map if available
+      etat: "", // Provide a sensible default or map if available
+      localisation: "", // Provide a sensible default or map if available
+      photos: item.image ? [item.image] : [],
     }));
 
     try {
       await creerCommande(produitsCommande);
       alert("Commande passée avec succès !");
     } catch (err) {
-      alert("Erreur lors de la création de la commande : " + err.message);
+      if (err instanceof Error) {
+        alert("Erreur lors de la création de la commande : " + err.message);
+      } else {
+        alert("Erreur lors de la création de la commande.");
+      }
     }
   };
 
@@ -75,13 +89,15 @@ const CartPage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center p-8"
         >
           <X className="w-24 h-24 mx-auto text-red-500 mb-6" />
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">Votre panier est vide </h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">
+            Votre panier est vide{" "}
+          </h2>
           <Link href="/Products">
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -100,14 +116,18 @@ const CartPage = () => {
   if (!cartItems.length) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center p-8"
         >
           <ShoppingBag className="w-24 h-24 mx-auto text-gray-300 mb-6" />
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">Votre panier est vide</h2>
-          <p className="text-gray-600 mb-8">Découvrez notre sélection de produits dans notre boutique</p>
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">
+            Votre panier est vide
+          </h2>
+          <p className="text-gray-600 mb-8">
+            Découvrez notre sélection de produits dans notre boutique
+          </p>
           <Link href="/boutique">
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -127,7 +147,7 @@ const CartPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         {/* Header */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4"
@@ -151,7 +171,7 @@ const CartPage = () => {
           <div className="lg:col-span-2 space-y-6">
             {cartItems.map((item, index) => (
               <motion.div
-                key={item.ID}
+                key={item.produit_id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -160,23 +180,23 @@ const CartPage = () => {
                 <div className="flex gap-6">
                   <div className="relative w-32 h-32 flex-shrink-0 overflow-hidden rounded-xl">
                     <img
-                      src={item.Photo}
-                      alt={item.Nom}
+                      src={item.image}
+                      alt={item.nom}
                       className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <div className="flex-grow">
                     <div className="flex justify-between">
                       <div className="space-y-1">
-                        <h3 className="text-lg font-semibold">{item.Nom}</h3>
+                        <h3 className="text-lg font-semibold">{item.nom}</h3>
                         <div className="flex items-center gap-2">
                           <span className="px-2 py-1 bg-blue-50 text-blue-700 text-sm rounded-full">
-                            {item.Marque}
+                            {/* {item.Marque} */}
                           </span>
                         </div>
                       </div>
                       <button
-                        onClick={() => removeItem(item.ID)}
+                        onClick={() => removeItem(item.produit_id)}
                         className="text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-red-50 rounded-full"
                       >
                         <X className="w-5 h-5" />
@@ -185,7 +205,7 @@ const CartPage = () => {
                     <div className="flex justify-between items-end mt-6">
                       <div className="flex items-center bg-gray-50 rounded-full p-1">
                         <button
-                          onClick={() => updateQuantity(item.ID, -1)}
+                          onClick={() => updateQuantity(item.produit_id, -1)}
                           className="p-2 rounded-full hover:bg-white hover:shadow-md transition-all"
                         >
                           <Minus className="w-4 h-4" />
@@ -194,14 +214,14 @@ const CartPage = () => {
                           {item.quantity || 1}
                         </span>
                         <button
-                          onClick={() => updateQuantity(item.ID, 1)}
+                          onClick={() => updateQuantity(item.produit_id, 1)}
                           className="p-2 rounded-full hover:bg-white hover:shadow-md transition-all"
                         >
                           <Plus className="w-4 h-4" />
                         </button>
                       </div>
                       <p className="text-xl font-semibold">
-                        {((item.Prix * (item.quantity || 1)).toFixed(2))} €
+                        {(item.prix * (item.quantity || 1)).toFixed(2)} €
                       </p>
                     </div>
                   </div>
@@ -237,7 +257,9 @@ const CartPage = () => {
                   disabled={commandeLoading}
                   className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-full py-4 font-medium mt-6 transform hover:scale-[1.02] transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {commandeLoading ? "Traitement en cours..." : "Passer la commande"}
+                  {commandeLoading
+                    ? "Traitement en cours..."
+                    : "Passer la commande"}
                 </button>
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-500 mt-4">
                   <Shield className="w-4 h-4" />
@@ -253,20 +275,24 @@ const CartPage = () => {
               transition={{ delay: 0.2 }}
               className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 shadow-lg border border-gray-100"
             >
-              <h3 className="font-semibold mb-4">Moyens de paiement acceptés</h3>
+              <h3 className="font-semibold mb-4">
+                Moyens de paiement acceptés
+              </h3>
               <div className="grid grid-cols-4 gap-4">
-                {['visa', 'mastercard', 'paypal', 'apple-pay'].map((payment) => (
-                  <div 
-                    key={payment}
-                    className="bg-white p-2 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                  >
-                    <img 
-                      src={`/${payment}-logo.png`} 
-                      alt={payment}
-                      className="w-full h-8 object-contain"
-                    />
-                  </div>
-                ))}
+                {["visa", "mastercard", "paypal", "apple-pay"].map(
+                  (payment) => (
+                    <div
+                      key={payment}
+                      className="bg-white p-2 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                    >
+                      <img
+                        src={`/${payment}-logo.png`}
+                        alt={payment}
+                        className="w-full h-8 object-contain"
+                      />
+                    </div>
+                  ),
+                )}
               </div>
             </motion.div>
 
@@ -281,20 +307,20 @@ const CartPage = () => {
                 {
                   icon: Shield,
                   title: "Garantie satisfait ou remboursé",
-                  description: "30 jours pour changer d'avis"
+                  description: "30 jours pour changer d'avis",
                 },
                 {
                   icon: ShoppingBag,
                   title: "Livraison express",
-                  description: "Livraison en 24/48h"
+                  description: "Livraison en 24/48h",
                 },
                 {
                   icon: CreditCard,
                   title: "Paiement sécurisé",
-                  description: "Vos données sont protégées"
-                }
+                  description: "Vos données sont protégées",
+                },
               ].map((item, index) => (
-                <div 
+                <div
                   key={index}
                   className="flex items-center gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
                 >

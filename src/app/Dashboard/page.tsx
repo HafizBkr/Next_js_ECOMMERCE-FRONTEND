@@ -1,17 +1,17 @@
 // /src/app/dashboard/AdminDashboard.tsx
-"use client"
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // Utilisation de next/navigation pour la redirection côté serveur
-import Sidebar from '../components/Dashboard/sidebar';
-import Header from '../components/Dashboard/header';
-import Overview from '../components/Dashboard/overview';
-import ProductSection from '../components/Dashboard/productSection';
-import EventSection from '../components/Dashboard/EventSection';
-import CustomerSection from '../components/Dashboard/CustomerSection';
-import CategorySection from '../components/Dashboard/CategorySection';
-import EvCategorySection from '../components/Dashboard/EventCategorySection';
-import OrderSection from '../components/Dashboard/ordersSection';
-import useAuth from '../hooks/useAuth'; 
+"use client";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // Utilisation de next/navigation pour la redirection côté serveur
+import Sidebar from "../components/Dashboard/sidebar";
+import Header from "../components/Dashboard/header";
+import Overview from "../components/Dashboard/overview";
+import ProductSection from "../components/Dashboard/productSection";
+import EventSection from "../components/Dashboard/EventSection";
+import CustomerSection from "../components/Dashboard/CustomerSection";
+import CategorySection from "../components/Dashboard/CategorySection";
+import EvCategorySection from "../components/Dashboard/EventCategorySection";
+import OrderSection from "../components/Dashboard/ordersSection";
+import useAuth from "../hooks/useAuth";
 
 // Types pour les données
 type Stats = {
@@ -33,16 +33,6 @@ type Product = {
   images: string[];
 };
 
-type Event = {
-  id: number | string;
-  title: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-  type: string;
-  status: string;
-};
-
 type Customer = {
   id: number | string;
   name: string;
@@ -62,9 +52,8 @@ type Category = {
 };
 
 const AdminDashboard = () => {
-  const [activeSection, setActiveSection] = useState<string>('overview');
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [showAddForm, setShowAddForm] = useState<boolean>(false);
+  const [activeSection, setActiveSection] = useState<string>("overview");
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const router = useRouter(); // Redirection avec next/navigation
 
   // États simulés pour les données
@@ -78,82 +67,111 @@ const AdminDashboard = () => {
   };
 
   const products: Product[] = [
-    { id: 1, name: 'Produit A', price: 20, status: 'Disponible', stock: 15, location: 'Entrepôt A', images: [] },
-    { id: 2, name: 'Produit B', price: 35, status: 'Indisponible', stock: 0, location: 'Entrepôt B', images: [] },
-  ];
-
-  const events: Event[] = [
-    { id: 1, title: 'Événement A', description: 'Description A', startDate: '2023-01-01', endDate: '2023-01-02', type: 'Public', status: 'Actif' },
+    {
+      id: 1,
+      name: "Produit A",
+      price: 20,
+      status: "Disponible",
+      stock: 15,
+      location: "Entrepôt A",
+      images: [],
+    },
+    {
+      id: 2,
+      name: "Produit B",
+      price: 35,
+      status: "Indisponible",
+      stock: 0,
+      location: "Entrepôt B",
+      images: [],
+    },
   ];
 
   const customers: Customer[] = [
-    { id: 1, name: 'Client A', email: 'clientA@example.com', points: 120, totalOrders: 5, status: 'Actif' },
+    {
+      id: 1,
+      name: "Client A",
+      email: "clientA@example.com",
+      points: 120,
+      totalOrders: 5,
+      status: "Actif",
+    },
   ];
 
   const categories: Category[] = [
-    { id: 1, name: 'Catégorie A', description: 'Description A', productsCount: 10, subcategories: ['Sous-cat 1'], status: 'Active' },
+    {
+      id: 1,
+      name: "Catégorie A",
+      description: "Description A",
+      productsCount: 10,
+      subcategories: ["Sous-cat 1"],
+      status: "Active",
+    },
   ];
 
-
   // Gestionnaires d'ajout
-  const handleAddProduct = () => setShowAddForm(true);
-  const handleAddEvent = () => setShowAddForm(true);
-  const handleAddCustomer = () => setShowAddForm(true);
-  const handleAddCategory = () => setShowAddForm(true);
+  const handleAddCustomer = () => {}; // Placeholder si besoin
+  const handleAddCategory = () => {}; // Placeholder si besoin
 
   // Vérifier l'existence du token dans localStorage
   useEffect(() => {
-    const token = localStorage.getItem('admin_token');
-  
+    const token = localStorage.getItem("admin_token");
+
     if (!token) {
-      router.push('/login');
+      router.push("/login");
       return;
     }
-  
+
     try {
       // Vérification si le token est un JWT valide (si applicable)
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const payload = JSON.parse(atob(token.split(".")[1]));
       const isExpired = payload.exp * 1000 < Date.now();
-  
+
       if (isExpired) {
-        localStorage.removeItem('admin_token'); // Supprimer le token expiré
-        router.push('/login');
+        localStorage.removeItem("admin_token"); // Supprimer le token expiré
+        router.push("/login");
       }
-    } catch (error) {
+    } catch {
       // Si le token est mal formaté, on le supprime et on redirige
-      localStorage.removeItem('admin_token');
-      router.push('/login');
+      localStorage.removeItem("admin_token");
+      router.push("/login");
     }
   }, [router]);
-  
 
   useAuth();
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+      <Sidebar
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+      />
       <div className="flex-1 overflow-auto">
         <Header activeSection={activeSection} />
         <main className="p-6">
-          {activeSection === 'overview' && <Overview stats={stats} />}
-          {activeSection === 'products' && (
+          {activeSection === "overview" && <Overview stats={stats} />}
+          {activeSection === "products" && (
             <ProductSection
               products={products}
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
             />
           )}
-          {activeSection === 'orders' && <OrderSection />}
-          {activeSection === 'events' && <EventSection />}
-          {activeSection === 'customers' && (
-            <CustomerSection customers={customers} onAddCustomer={handleAddCustomer} />
+          {activeSection === "orders" && <OrderSection />}
+          {activeSection === "events" && <EventSection />}
+          {activeSection === "customers" && (
+            <CustomerSection
+              customers={customers}
+              onAddCustomer={handleAddCustomer}
+            />
           )}
-          {activeSection === 'pcategories' && (
-            <CategorySection categories={categories} onAddCategory={handleAddCategory} />
+          {activeSection === "pcategories" && (
+            <CategorySection
+              categories={categories}
+              onAddCategory={handleAddCategory}
+            />
           )}
-           {activeSection === 'ecategories' && (
-            <EvCategorySection />
-          )}
+          {activeSection === "ecategories" && <EvCategorySection />}
         </main>
       </div>
     </div>

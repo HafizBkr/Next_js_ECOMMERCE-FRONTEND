@@ -1,24 +1,29 @@
-import React, { useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import useProducts from '../hooks/useProducts';
+import React, { useEffect } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import useProducts from "../hooks/useProducts";
 
 // Types
 interface Product {
-  id: string | number; // Harmonisation des types
+  id?: string;
   nom: string;
   prix: number;
-  photos?: string[];
+  stock: number;
+  etat: string;
+  photos: string[];
+  categorie_id: string;
+  localisation: string;
+  description: string;
+  marque: string;
+  modele: string;
+  disponible: boolean;
 }
-
-
-
 
 // Composant pour chaque carte produit
 const ProductCard: React.FC<{ product: Product }> = ({ product }) => (
   <div className="group relative p-4 bg-white rounded-lg shadow hover:shadow-lg transition-all duration-300 flex-shrink-0 w-64">
     <div className="flex justify-center mb-4">
       <img
-        src={product.photos?.[0] || '/images/default-product.png'}
+        src={product.photos?.[0] || "/images/default-product.png"}
         alt={product.nom}
         className="w-48 h-48 object-contain group-hover:scale-105 transition-transform duration-300"
       />
@@ -35,7 +40,10 @@ const ProductCarousel: React.FC<{ products: Product[] }> = ({ products }) => {
   const [startIndex, setStartIndex] = React.useState(0);
   const itemsToShow = 4;
 
-  const next = () => setStartIndex((current) => Math.min(current + 1, products.length - itemsToShow));
+  const next = () =>
+    setStartIndex((current) =>
+      Math.min(current + 1, products.length - itemsToShow),
+    );
   const prev = () => setStartIndex((current) => Math.max(current - 1, 0));
 
   return (
@@ -75,7 +83,6 @@ const ProductCarousel: React.FC<{ products: Product[] }> = ({ products }) => {
 // Landing Page principale
 const LandingPageProducts: React.FC = () => {
   const { products, getAllProducts, loading, error } = useProducts();
-  
 
   useEffect(() => {
     getAllProducts();
@@ -108,7 +115,7 @@ const LandingPageProducts: React.FC = () => {
           Voir tous les produits
         </a>
       </div>
-    
+
       {limitedProducts?.length > 0 ? (
         <ProductCarousel products={limitedProducts} />
       ) : (

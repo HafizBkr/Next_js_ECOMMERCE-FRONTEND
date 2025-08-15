@@ -1,12 +1,8 @@
-import React, { useState } from 'react';
-import { GoogleButton } from './GoogleButton';
-import { useAuth } from '../../hooks/useGAuth'; // Assurez-vous que le chemin est correct
+import React from "react";
+import { GoogleButton } from "./GoogleButton";
+import { useAuth } from "../../hooks/useGAuth"; // Assurez-vous que le chemin est correct
 
-interface LoginFormProps {
-  onToggle: () => void;
-}
-
-export const LoginForm: React.FC<LoginFormProps> = ({ onToggle }) => {
+export const LoginForm: React.FC = () => {
   const { initiateGoogleAuth, loading, error } = useAuth();
 
   return (
@@ -19,10 +15,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggle }) => {
       </div>
 
       {/* Bouton Google pour initier l'authentification */}
-      <GoogleButton 
-        onClick={initiateGoogleAuth} 
-        disabled={loading} 
-      />
+      <GoogleButton onClick={initiateGoogleAuth} disabled={loading} />
 
       {/* Affichage des erreurs (le cas échéant) */}
       {error && <p className="text-red-500 text-sm">{error}</p>}

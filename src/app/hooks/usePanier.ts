@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 // Définir les types pour les données de produits
 interface Produit {
@@ -9,11 +9,12 @@ interface Produit {
 }
 
 interface Panier {
-  data: Produit[]; 
+  data: Produit[];
   status?: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8080';
+const API_URL =
+  process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8080";
 
 // Définir le hook usePanier
 export function usePanier() {
@@ -22,7 +23,7 @@ export function usePanier() {
   const [error, setError] = useState<string | null>(null);
 
   // Récupérer le jwt_token depuis localStorage
-  const getToken = () => localStorage.getItem('jwt_token');
+  const getToken = () => localStorage.getItem("jwt_token");
 
   // Fonction pour récupérer la liste des produits dans le panier
   const fetchPanier = async () => {
@@ -31,27 +32,31 @@ export function usePanier() {
 
     const token = getToken();
     if (!token) {
-      setError('Token JWT introuvable');
+      setError("Token JWT introuvable");
       setLoading(false);
       return;
     }
 
     try {
       const response = await fetch(`${API_URL}/panier`, {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       if (!response.ok) {
-        throw new Error('Échec de la récupération du panier');
+        throw new Error("Échec de la récupération du panier");
       }
 
       const data: Panier = await response.json();
       setPanier(data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message || "Erreur lors de la récupération du panier");
+      } else {
+        setError("Erreur lors de la récupération du panier");
+      }
     } finally {
       setLoading(false);
     }
@@ -64,28 +69,32 @@ export function usePanier() {
 
     const token = getToken();
     if (!token) {
-      setError('Token JWT introuvable');
+      setError("Token JWT introuvable");
       setLoading(false);
       return;
     }
 
     try {
       const response = await fetch(`${API_URL}/panier/ajouter`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ produit_id: produitId }),
       });
 
       if (!response.ok) {
-        throw new Error('Échec de l\'ajout du produit au panier');
+        throw new Error("Échec de l'ajout du produit au panier");
       }
 
       await fetchPanier(); // Recharger la liste des produits après ajout
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message || "Erreur lors de l'ajout au panier");
+      } else {
+        setError("Erreur lors de l'ajout au panier");
+      }
     } finally {
       setLoading(false);
     }
@@ -98,28 +107,34 @@ export function usePanier() {
 
     const token = getToken();
     if (!token) {
-      setError('Token JWT introuvable');
+      setError("Token JWT introuvable");
       setLoading(false);
       return;
     }
 
     try {
       const response = await fetch(`${API_URL}/panier/enlever`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ produit_id: produitId }),
       });
 
       if (!response.ok) {
-        throw new Error('Échec de la suppression du produit du panier');
+        throw new Error("Échec de la suppression du produit du panier");
       }
 
       await fetchPanier(); // Recharger la liste des produits après suppression
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(
+          error.message || "Erreur lors de la suppression du produit du panier",
+        );
+      } else {
+        setError("Erreur lors de la suppression du produit du panier");
+      }
     } finally {
       setLoading(false);
     }

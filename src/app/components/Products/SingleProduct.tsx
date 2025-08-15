@@ -1,12 +1,12 @@
 "use client";
-import { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { Heart, ShoppingCart, X } from 'lucide-react';
+import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
+import { Heart, ShoppingCart, X } from "lucide-react";
 import iphone from "@/app/public/images/iphonee.png";
-import useProductByID from '../../hooks/useProductByid';
-import { usePanier } from '../../hooks/usePanier';
-import { useCommande } from '../../hooks/useCommande'; // Import du hook useCommande
+import useProductByID from "../../hooks/useProductByid";
+import { usePanier } from "../../hooks/usePanier";
+import { useCommande } from "../../hooks/useCommande";
 
 const ProductDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -20,10 +20,14 @@ const ProductDetail = () => {
   const { product, loading, error } = useProductByID(productId);
 
   // Gestion du panier
-  const { ajouterProduit, loading: cartLoading, error: cartError } = usePanier();
+  const { ajouterProduit, loading: cartLoading } = usePanier();
 
   // Gestion des commandes
-  const { creerCommande, loading: commandeLoading, error: commandeError, success: commandeSuccess } = useCommande();
+  const {
+    creerCommande,
+    loading: commandeLoading,
+    success: commandeSuccess,
+  } = useCommande();
 
   // Ajouter un produit au panier
   const handleAddToCart = async () => {
@@ -33,14 +37,14 @@ const ProductDetail = () => {
         setShowCartPopup(true);
         setTimeout(() => setShowCartPopup(false), 3000);
       } catch (err) {
-        console.error('Erreur lors de l\'ajout au panier', err);
+        console.error("Erreur lors de l'ajout au panier", err);
       }
     }
   };
 
   // Rediriger vers la page du panier
   const handleGoToCart = () => {
-    router.push('/Panier');
+    router.push("/Panier");
   };
 
   // Fermer la popup du panier
@@ -53,13 +57,23 @@ const ProductDetail = () => {
     if (product) {
       try {
         // Créer une commande avec le produit actuel et la quantité sélectionnée
-        await creerCommande([{ produit_id: productId, quantite: quantity }]);
+        await creerCommande([
+          {
+            nom: product?.nom || "",
+            prix_unite: product?.prix || 0,
+            quantite: quantity,
+            model: product?.modele || "",
+            etat: product?.etat || "",
+            localisation: product?.localisation || "",
+            photos: product?.photos || [],
+          },
+        ]);
         if (commandeSuccess) {
           // Rediriger vers une page de confirmation après la création de la commande
-          router.push('/confirmation');
+          router.push("/confirmation");
         }
       } catch (err) {
-        console.error('Erreur lors de la création de la commande', err);
+        console.error("Erreur lors de la création de la commande", err);
       }
     }
   };
@@ -71,19 +85,31 @@ const ProductDetail = () => {
   if (error) return <div>Erreur: {error}</div>;
 
   // Utiliser les images du produit ou des images par défaut
-  const thumbnails = product?.photos?.length ? product.photos : [iphone.src, iphone.src, iphone.src, iphone.src, iphone.src];
+  const thumbnails = product?.photos?.length
+    ? product.photos
+    : [iphone.src, iphone.src, iphone.src, iphone.src, iphone.src];
 
   return (
     <div className="max-w-7xl mx-auto p-4 relative">
       {/* Navigation */}
       <nav className="text-sm mb-4 text-gray-600">
-        <span className="hover:underline cursor-pointer">Retourner à la page d'accueil</span>
-        {' · '}
+        <span className="hover:underline cursor-pointer">
+          Retourner à la page d&apos;accueil
+        </span>
+        <span className="hover:underline cursor-pointer">
+          Retourner à la page d&apos;accueil
+        </span>
+        {" · "}
         <span className="hover:underline cursor-pointer">High-tech</span>
-        {' · '}
-        <span className="hover:underline cursor-pointer">Téléphonie, mobilité</span>
-        {' · '}
-        <span className="hover:underline cursor-pointer">Téléphones mobiles</span>
+        {" · "}
+        <span className="hover:underline cursor-pointer">
+          Téléphonie, mobilité
+        </span>
+        {" · "}
+        <span className="hover:underline cursor-pointer">
+          T&eacute;l&eacute;phones mobiles
+        </span>
+        {/* Exemple d&apos;apostrophe échappée : l&apos;objet */}
       </nav>
 
       {/* Grille principale */}
@@ -96,7 +122,7 @@ const ProductDetail = () => {
                 key={idx}
                 onClick={() => setCurrentImageIndex(idx)}
                 className={`relative aspect-square border-2 rounded-lg overflow-hidden
-                  ${currentImageIndex === idx ? 'border-blue-500' : 'border-gray-200'}`}
+                  ${currentImageIndex === idx ? "border-blue-500" : "border-gray-200"}`}
               >
                 <Image
                   src={thumb}
@@ -131,7 +157,12 @@ const ProductDetail = () => {
             <div className="flex items-center gap-2">
               <button className="p-2">
                 <svg viewBox="0 0 24 24" width="24" height="24">
-                  <path fill="none" stroke="currentColor" strokeWidth="2" d="M15 3l6 6m0-6l-6 6" />
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    d="M15 3l6 6m0-6l-6 6"
+                  />
                 </svg>
               </button>
               <div className="flex items-center gap-1">
@@ -142,9 +173,13 @@ const ProductDetail = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="font-medium hover:underline cursor-pointer">{product?.marque}</span>
+            <span className="font-medium hover:underline cursor-pointer">
+              {product?.marque}
+            </span>
             <span className="text-gray-600">(2816)</span>
-            <span className="text-blue-600 hover:underline cursor-pointer">Pro</span>
+            <span className="text-blue-600 hover:underline cursor-pointer">
+              Pro
+            </span>
           </div>
 
           <div className="text-2xl font-semibold">{product?.prix} EUR</div>
@@ -178,14 +213,14 @@ const ProductDetail = () => {
               disabled={commandeLoading}
               className="w-full bg-blue-600 text-white rounded-full py-3 font-medium"
             >
-              {commandeLoading ? 'Traitement en cours...' : 'Achat immédiat'}
+              {commandeLoading ? "Traitement en cours..." : "Achat immédiat"}
             </button>
             <button
               onClick={handleAddToCart}
               disabled={cartLoading}
               className="w-full border border-blue-600 text-blue-600 rounded-full py-3 font-medium"
             >
-              {cartLoading ? 'Ajout en cours...' : 'Ajouter au panier'}
+              {cartLoading ? "Ajout en cours..." : "Ajouter au panier"}
             </button>
             <button className="w-full border rounded-full py-3 font-medium flex items-center justify-center gap-2">
               <Heart className="w-5 h-5" />
@@ -197,12 +232,21 @@ const ProductDetail = () => {
           <div className="space-y-4 border-t pt-4">
             <div>
               <div className="font-medium mb-2">Livraison :</div>
-              <p className="text-sm">La livraison n'est peut-être pas offerte vers : Togo. Consultez la description de l'objet ou contactez le vendeur pour en savoir plus sur les options de livraison.</p>
-              <button className="text-blue-600 hover:underline text-sm">Afficher les détails</button>
+              <p className="text-sm">
+                La livraison n&apos;est peut-être pas offerte vers : Togo.
+                Consultez la description de l&apos;objet ou contactez le vendeur
+                pour en savoir plus sur les options de livraison.
+              </p>
+              <button className="text-blue-600 hover:underline text-sm">
+                Afficher les détails
+              </button>
             </div>
 
             <div>
-              <div>Lieu où se trouve l'objet : <span className="font-medium">{product?.localisation}</span></div>
+              <div>
+                Lieu où se trouve l&apos;objet :{" "}
+                <span className="font-medium">{product?.localisation}</span>
+              </div>
             </div>
 
             <div>
@@ -216,8 +260,13 @@ const ProductDetail = () => {
               <div className="flex justify-between">
                 <span>Retours :</span>
                 <div className="text-right">
-                  <p>Retour sous 30 jours. L'acheteur paie les frais de retour.</p>
-                  <button className="text-blue-600 hover:underline">Afficher les détails</button>
+                  <p>
+                    Retour sous 30 jours. L&apos;acheteur paie les frais de
+                    retour.
+                  </p>
+                  <button className="text-blue-600 hover:underline">
+                    Afficher les détails
+                  </button>
                 </div>
               </div>
             </div>
@@ -227,21 +276,41 @@ const ProductDetail = () => {
               <div className="flex gap-2 mt-2">
                 <Image src="/paypal.png" alt="PayPal" width={40} height={24} />
                 <Image src="/visa.png" alt="Visa" width={40} height={24} />
-                <Image src="/mastercard.png" alt="Mastercard" width={40} height={24} />
-                <Image src="/dinersclub.png" alt="Diners Club" width={40} height={24} />
+                <Image
+                  src="/mastercard.png"
+                  alt="Mastercard"
+                  width={40}
+                  height={24}
+                />
+                <Image
+                  src="/dinersclub.png"
+                  alt="Diners Club"
+                  width={40}
+                  height={24}
+                />
               </div>
             </div>
 
             <div className="space-y-4">
-              <h3 className="font-medium text-lg">Achetez en toute confiance</h3>
+              <h3 className="font-medium text-lg">
+                Achetez en toute confiance
+              </h3>
               <div className="flex items-start gap-3">
-                <svg className="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                <svg
+                  className="w-6 h-6 text-blue-600"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
                   <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div>
                   <div className="font-medium">Top Fiabilité Plus</div>
-                  <p>Vendeur de confiance, livraison rapide et retours facilités.</p>
-                  <button className="text-blue-600 hover:underline">En savoir plus</button>
+                  <p>
+                    Vendeur de confiance, livraison rapide et retours facilités.
+                  </p>
+                  <button className="text-blue-600 hover:underline">
+                    En savoir plus
+                  </button>
                 </div>
               </div>
             </div>
@@ -261,7 +330,9 @@ const ProductDetail = () => {
               <X className="w-5 h-5 text-gray-500 hover:text-gray-700" />
             </button>
           </div>
-          <p className="text-sm text-gray-600 mb-3">Votre produit a été ajouté avec succès au panier.</p>
+          <p className="text-sm text-gray-600 mb-3">
+            Votre produit a été ajouté avec succès au panier.
+          </p>
           <div className="flex space-x-2">
             <button
               onClick={handleGoToCart}
