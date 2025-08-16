@@ -44,10 +44,10 @@ export const useAuth = () => {
   });
 
   useEffect(() => {
-    // Vérifier l'URL pour le jwt_token et l'id_token
+    // Vérifier l'URL pour le jwt_token ou le code OAuth
     const urlParams = new URLSearchParams(window.location.search);
     const jwtTokenFromUrl = urlParams.get("jwt_token");
-    const idTokenFromUrl = urlParams.get("id_token"); // Récupérer id_token de l'URL
+    const codeFromUrl = urlParams.get("code");
 
     if (jwtTokenFromUrl) {
       localStorage.setItem("jwt_token", jwtTokenFromUrl);
@@ -58,20 +58,13 @@ export const useAuth = () => {
           window.location.pathname,
         ); // Nettoyer l'URL
       }
-      handleAuthCallback();
+      // Ici, tu peux fetch les infos utilisateur ou rediriger
       return;
     }
 
-    if (idTokenFromUrl) {
-      localStorage.setItem("id_token", idTokenFromUrl); // Enregistrer id_token dans localStorage
-      if (typeof document !== "undefined") {
-        window.history.replaceState(
-          {},
-          document.title,
-          window.location.pathname,
-        ); // Nettoyer l'URL
-      }
-      handleAuthCallback();
+    // Si on a un code OAuth, on appelle le backend pour l'échanger contre un token
+    if (codeFromUrl) {
+      handleAuthCallback(codeFromUrl);
       return;
     }
 
@@ -178,11 +171,11 @@ export const useAuth = () => {
     }
   }, []);
 
-  const handleAuthCallback = useCallback(async () => {
+  const handleAuthCallback = useCallback(async (code: string) => {
     try {
       setState((prev) => ({ ...prev, loading: true }));
 
-      const response = await fetch(`${API_URL}/auth/callback`, {
+      const response = await fetch(`${API_URL}/auth/callback?code=${code}`, {
         method: "GET",
         credentials: "include",
       });
@@ -194,7 +187,6 @@ export const useAuth = () => {
       const data: UserProfile = await response.json();
 
       localStorage.setItem("jwt_token", data.jwt_token);
-      localStorage.setItem("id_token", data.google_id);
       localStorage.setItem("user_profile", JSON.stringify(data));
 
       setState((prev) => ({
