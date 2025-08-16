@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import useAuth from "@/app/hooks/useGAuth";
 
@@ -12,6 +12,17 @@ const CompleteProfileForm = () => {
   });
 
   const router = useRouter();
+
+  // Ajout : Stocker le id_token de l'URL dans le localStorage au montage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const query = new URLSearchParams(window.location.search);
+      const idToken = query.get("id_token");
+      if (idToken) {
+        localStorage.setItem("id_token", idToken);
+      }
+    }
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
